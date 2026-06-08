@@ -335,27 +335,6 @@ body[data-theme="rose"]{
   --soft:#faedf3;
   --accent:#9a5873;
 }
-.backup-panel,.sync-panel{
-  margin-top:14px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:rgba(255,255,255,.65);
-  padding:10px;
-}
-.backup-buttons,.sync-buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  align-items:center;
-}
-.backup-file{
-  display:none;
-}
-.sync-status{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:6px;
-}
 .theme-panel{
   margin-top:14px;
   border:1px solid var(--line);
@@ -482,6 +461,16 @@ body[data-theme="rose"]{
             <button class="btn" onclick="addWorkRecurring()">+</button>
           </div>
         </div>
+
+        <div class="work-recurring-panel">
+          <h4>Feste Aufgaben Privat</h4>
+          <div class="summary">Wiederkehrende private Aufgaben und Wochentage bearbeiten.</div>
+          <div id="privateRecurringSettings"></div>
+          <div class="edit-row">
+            <input id="newPrivateRecurringText" placeholder="Neue feste private Aufgabe">
+            <button class="btn" onclick="addPrivateRecurring()">+</button>
+          </div>
+        </div>
     </div>
 
     <section class="note-panel">
@@ -532,27 +521,7 @@ body[data-theme="rose"]{
       <div class="summary">Gespeichert werden die erledigten Aufgaben des archivierten Tages, unkategorisiert als einfache Liste.</div>
       <div id="archiveContent"></div>
     </section>
-
-
-    <section class="backup-panel">
-      <h3>Datensicherung</h3>
-      <div class="backup-buttons">
-        <button class="btn" onclick="createBackup()">Datensicherung erstellen</button>
-        <button class="btn" onclick="document.getElementById('backupFileInput').click()">Datensicherung laden</button>
-        <input id="backupFileInput" class="backup-file" type="file" accept="application/json,.json" onchange="loadBackupFile(event)">
-      </div>
-    </section>
-
-    <section class="sync-panel">
-      <h3>Synchronisation</h3>
-      <div class="sync-buttons">
-        <button class="btn" onclick="uploadCurrentToFirebase()">Lokale Daten nach Firebase übernehmen</button>
-        <button class="btn" onclick="loadFromFirebase()">Daten aus Firebase laden</button>
-      </div>
-      <div id="syncStatus" class="sync-status">Firebase wird vorbereitet …</div>
-    </section>
-
-    <section class="theme-panel">
+<section class="theme-panel">
       <h3>Farbstimmung</h3>
       <div class="theme-buttons">
         <button class="theme-choice" onclick="setTheme('lavendel')" data-theme-choice="lavendel"><span class="theme-dot" style="background:#6b4a78"></span>Lavendel</button>
@@ -569,6 +538,7 @@ body[data-theme="rose"]{
 const STORAGE_KEY = "daniela_tagesblatt_v4_2";
 const IDEAS_KEY = STORAGE_KEY + "_ideas";
 const WORK_RECURRING_KEY = STORAGE_KEY + "_work_recurring";
+const PRIVATE_RECURRING_KEY = STORAGE_KEY + "_private_recurring";
 const THEME_KEY = STORAGE_KEY + "_theme";
 const SYNC_ENABLED_KEY = STORAGE_KEY + "_firebase_sync_enabled";
 
@@ -601,6 +571,8 @@ let workRecurring = loadWorkRecurring() || [
   {id:"mails", text:"Mails", days:[1,2,3,4,5,6,0]},
   {id:"rueckrufe", text:"Rückrufe", days:[1,2,3,4,5]}
 ];
+
+let privateRecurring = loadPrivateRecurring() || [];
 
 let selectedDate = toISO(new Date());
 let selectedEditCategory = "haushalt";
@@ -636,6 +608,17 @@ function saveWorkRecurring(){
   localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
   scheduleFirebaseSave();
 }
+function loadPrivateRecurring(){
+  try{
+    const current = localStorage.getItem(PRIVATE_RECURRING_KEY);
+    if(current) return JSON.parse(current);
+  }catch(e){}
+  return null;
+}
+function savePrivateRecurring(){
+  localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
+  scheduleFirebaseSave();
+}
 function toISO(date){return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`}
 function parseISO(iso){return new Date(iso+"T12:00:00")}
 function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d}
@@ -658,6 +641,11 @@ function defaultTasks(iso){
   });
   Object.keys(ideas).forEach(cat=>{
     list.push(makeTask(cat.charAt(0).toUpperCase()+cat.slice(1),"privat",cat,true));
+  });
+  (privateRecurring || []).forEach(item=>{
+    if((item.days || []).includes(weekdayNumber)){
+      list.push(makeTask(item.text,"privat","privrec_"+item.id,true));
+    }
   });
   return list;
 }
@@ -695,6 +683,7 @@ function renderDays(){
   holder.innerHTML="";
   next14Days().forEach(iso=>{
     ensureWorkRecurringTasks(iso);
+    ensurePrivateRecurringTasks(iso);
     const open=(data.byDate[iso]||[]).filter(t=>!t.done).length;
     const b=document.createElement("button");
     b.className="day"+(iso===selectedDate?" active":"");
@@ -739,9 +728,31 @@ function ensureWorkRecurringTasks(date){
   });
 }
 
+function ensurePrivateRecurringTasks(date){
+  if(!data.byDate[date]) data.byDate[date]=defaultTasks(date);
+  const weekdayNumber = parseISO(date).getDay();
+
+  (privateRecurring || []).forEach(item=>{
+    const category = "privrec_" + item.id;
+    const shouldExist = (item.days || []).includes(weekdayNumber);
+    const existing = data.byDate[date].find(t => t.section==="privat" && t.recurring===true && t.category===category);
+
+    if(shouldExist && !isSuppressed(date, category)){
+      if(existing){
+        existing.text = item.text;
+      }else{
+        data.byDate[date].push(makeTask(item.text,"privat",category,true));
+      }
+    }else{
+      data.byDate[date] = data.byDate[date].filter(t => !(t.section==="privat" && t.recurring===true && t.category===category));
+    }
+  });
+}
+
 function renderTasks(){
   if(!data.byDate[selectedDate]) data.byDate[selectedDate]=defaultTasks(selectedDate);
   ensureWorkRecurringTasks(selectedDate);
+  ensurePrivateRecurringTasks(selectedDate);
   Object.keys(ideas).forEach(cat=>{
     const exists = data.byDate[selectedDate].some(t=>t.section==="privat" && t.category===cat);
     if(!exists && !isSuppressed(selectedDate, cat)) {
@@ -801,7 +812,29 @@ function editTaskText(index){
 }
 
 function toggleDone(index){
-  data.byDate[selectedDate][index].done=!data.byDate[selectedDate][index].done;
+  const list = data.byDate[selectedDate];
+  const task = list[index];
+  if(!task) return;
+
+  const wasDone = task.done;
+  task.done = !task.done;
+
+  // Wenn eine Aufgabe neu erledigt wird, wandert sie innerhalb ihres Bereichs nach unten.
+  // Wird das Häkchen wieder entfernt, bleibt sie dort.
+  if(!wasDone && task.done){
+    const [movedTask] = list.splice(index, 1);
+
+    let insertIndex = list.length;
+    for(let i = list.length - 1; i >= 0; i--){
+      if(list[i].section === movedTask.section){
+        insertIndex = i + 1;
+        break;
+      }
+    }
+
+    list.splice(insertIndex, 0, movedTask);
+  }
+
   save();render();
 }
 
@@ -918,6 +951,7 @@ function toggleSettings(){
 
 function renderSettings(){
   renderWorkRecurringSettings();
+  renderPrivateRecurringSettings();
   const cats=Object.keys(ideas);
   if(!ideas[selectedEditCategory]) selectedEditCategory=cats[0] || "";
   const catHolder=document.getElementById("settingsCategories");
@@ -1023,6 +1057,91 @@ function addWorkRecurring(){
   saveWorkRecurring();
   updateAllWorkRecurringInVisibleDays();
   render();
+}
+
+function renderPrivateRecurringSettings(){
+  const holder = document.getElementById("privateRecurringSettings");
+  if(!holder) return;
+  holder.innerHTML = "";
+
+  const names = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+  (privateRecurring || []).forEach((item, index)=>{
+    const div = document.createElement("div");
+    div.className = "recurring-row";
+
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.value = item.text;
+    textInput.onchange = () => {
+      const val = textInput.value.trim();
+      if(val) item.text = val;
+      savePrivateRecurring();
+      updateAllPrivateRecurringInVisibleDays();
+      render();
+    };
+    div.appendChild(textInput);
+
+    const week = document.createElement("div");
+    week.className = "weekday-row";
+
+    names.forEach((name, dayNumber)=>{
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = (item.days || []).includes(dayNumber);
+      cb.onchange = () => {
+        if(cb.checked){
+          if(!item.days.includes(dayNumber)) item.days.push(dayNumber);
+        }else{
+          item.days = item.days.filter(d => d !== dayNumber);
+        }
+        savePrivateRecurring();
+        updateAllPrivateRecurringInVisibleDays();
+        render();
+      };
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(name));
+      week.appendChild(label);
+    });
+
+    const del = document.createElement("button");
+    del.className = "btn delete";
+    del.textContent = "löschen";
+    del.onclick = () => {
+      if(!confirm("Feste private Aufgabe wirklich löschen?")) return;
+      const deletedId = item.id;
+      privateRecurring.splice(index,1);
+      Object.keys(data.byDate || {}).forEach(date=>{
+        data.byDate[date] = (data.byDate[date] || []).filter(task => !(task.section==="privat" && task.recurring===true && task.category==="privrec_"+deletedId));
+      });
+      savePrivateRecurring();
+      save();
+      render();
+    };
+    week.appendChild(del);
+
+    div.appendChild(week);
+    holder.appendChild(div);
+  });
+}
+
+function addPrivateRecurring(){
+  const input = document.getElementById("newPrivateRecurringText");
+  const text = input.value.trim();
+  if(!text) return;
+
+  const id = "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,6);
+  privateRecurring.push({id, text, days:[1,2,3,4,5,6,0]});
+  input.value = "";
+  savePrivateRecurring();
+  updateAllPrivateRecurringInVisibleDays();
+  render();
+}
+
+function updateAllPrivateRecurringInVisibleDays(){
+  next14Days().forEach(iso => ensurePrivateRecurringTasks(iso));
+  save();
 }
 
 function updateAllWorkRecurringInVisibleDays(){
@@ -1175,6 +1294,7 @@ function collectBackupData(){
     data: data,
     ideas: ideas,
     workRecurring: workRecurring,
+    privateRecurring: privateRecurring,
     theme: localStorage.getItem(THEME_KEY) || "lavendel"
   };
 }
@@ -1217,10 +1337,12 @@ function loadBackupFile(event){
       data = backup.data || {byDate:{}};
       ideas = backup.ideas || ideas;
       workRecurring = backup.workRecurring || workRecurring;
+      privateRecurring = backup.privateRecurring || privateRecurring;
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
       localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
+      localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
 
       if(backup.theme){
         localStorage.setItem(THEME_KEY, backup.theme);
@@ -1278,6 +1400,7 @@ function collectFullState(){
     data: data,
     ideas: ideas,
     workRecurring: workRecurring,
+    privateRecurring: privateRecurring,
     theme: localStorage.getItem(THEME_KEY) || "lavendel"
   };
 }
@@ -1290,10 +1413,12 @@ function applyFullState(state){
   data = state.data || {byDate:{}};
   ideas = state.ideas || ideas;
   workRecurring = state.workRecurring || workRecurring;
+  privateRecurring = state.privateRecurring || privateRecurring;
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
   localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
+  localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
 
   if(state.theme){
     localStorage.setItem(THEME_KEY, state.theme);
