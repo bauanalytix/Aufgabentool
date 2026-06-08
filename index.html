@@ -301,39 +301,25 @@ input,select,textarea{
 }
 
 body[data-theme="lavendel"]{
-  --bg:#f3eef6;
-  --paper:#fffaff;
-  --line:#d7c8df;
-  --soft:#f5edf8;
-  --accent:#6b4a78;
+  --bg:#e8dcf2;
+  --paper:#fbf7ff;
+  --line:#b99bd0;
+  --soft:#eadff4;
+  --accent:#6a4c93;
 }
 body[data-theme="salbei"]{
-  --bg:#edf5ed;
-  --paper:#fbfffb;
-  --line:#c8dcc8;
-  --soft:#eef7ee;
-  --accent:#4f7656;
-}
-body[data-theme="sonne"]{
-  --bg:#f8f0dc;
-  --paper:#fffdf5;
-  --line:#dfcfa5;
-  --soft:#fbf2d9;
-  --accent:#9a7134;
+  --bg:#dceade;
+  --paper:#f8fff9;
+  --line:#9fbea5;
+  --soft:#dcecdf;
+  --accent:#3f6f4a;
 }
 body[data-theme="himmel"]{
-  --bg:#edf4fa;
-  --paper:#fafdff;
-  --line:#c6d8e6;
-  --soft:#eef6fb;
-  --accent:#4f6f8f;
-}
-body[data-theme="rose"]{
-  --bg:#f8eef2;
-  --paper:#fffafb;
-  --line:#dfc8d2;
-  --soft:#faedf3;
-  --accent:#9a5873;
+  --bg:#dcebf7;
+  --paper:#f8fcff;
+  --line:#9fc3df;
+  --soft:#dcecf8;
+  --accent:#3f74a3;
 }
 .theme-panel{
   margin-top:14px;
@@ -524,11 +510,9 @@ body[data-theme="rose"]{
 <section class="theme-panel">
       <h3>Farbstimmung</h3>
       <div class="theme-buttons">
-        <button class="theme-choice" onclick="setTheme('lavendel')" data-theme-choice="lavendel"><span class="theme-dot" style="background:#6b4a78"></span>Lavendel</button>
-        <button class="theme-choice" onclick="setTheme('salbei')" data-theme-choice="salbei"><span class="theme-dot" style="background:#4f7656"></span>Salbei</button>
-        <button class="theme-choice" onclick="setTheme('sonne')" data-theme-choice="sonne"><span class="theme-dot" style="background:#d6a648"></span>Sonne</button>
-        <button class="theme-choice" onclick="setTheme('himmel')" data-theme-choice="himmel"><span class="theme-dot" style="background:#5f9dc8"></span>Himmel</button>
-        <button class="theme-choice" onclick="setTheme('rose')" data-theme-choice="rose"><span class="theme-dot" style="background:#c96f91"></span>Rosé</button>
+        <button class="theme-choice" onclick="setTheme('salbei')" data-theme-choice="salbei"><span class="theme-dot" style="background:#3f6f4a"></span>Salbei</button>
+        <button class="theme-choice" onclick="setTheme('himmel')" data-theme-choice="himmel"><span class="theme-dot" style="background:#3f74a3"></span>Himmel</button>
+        <button class="theme-choice" onclick="setTheme('lavendel')" data-theme-choice="lavendel"><span class="theme-dot" style="background:#6a4c93"></span>Lavendel</button>
       </div>
     </section>
   </main>
@@ -1503,7 +1487,11 @@ function scheduleFirebaseSave(){
 
 
 function applySavedTheme(){
-  const theme = localStorage.getItem(THEME_KEY) || "lavendel";
+  let theme = localStorage.getItem(THEME_KEY) || "salbei";
+  if(!["salbei","himmel","lavendel"].includes(theme)){
+    theme = "salbei";
+    localStorage.setItem(THEME_KEY, theme);
+  }
   document.body.setAttribute("data-theme", theme);
   document.querySelectorAll("[data-theme-choice]").forEach(btn=>{
     btn.classList.toggle("active", btn.getAttribute("data-theme-choice") === theme);
