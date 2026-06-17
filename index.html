@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mein Tag</title>
+<meta name="theme-color" content="#6b4a78">
+<meta name="application-name" content="Mein Tag">
+<meta name="apple-mobile-web-app-title" content="Mein Tag">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22108%22%20fill%3D%22%236b4a78%22/%3E%0A%20%20%3Crect%20x%3D%22120%22%20y%3D%2286%22%20width%3D%22272%22%20height%3D%22340%22%20rx%3D%2234%22%20fill%3D%22%23fffaff%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22145%22%20width%3D%22208%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22205%22%20width%3D%22150%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22265%22%20width%3D%22188%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22325%22%20width%3D%22132%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Cpath%20d%3D%22M325%20202l23%2023%2048-58%22%20fill%3D%22none%22%20stroke%3D%22%236b4a78%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ccircle%20cx%3D%22128%22%20cy%3D%2295%22%20r%3D%2214%22%20fill%3D%22%23f5edf8%22/%3E%0A%20%20%3Ccircle%20cx%3D%22384%22%20cy%3D%2295%22%20r%3D%2214%22%20fill%3D%22%23f5edf8%22/%3E%0A%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22108%22%20fill%3D%22%236b4a78%22/%3E%0A%20%20%3Crect%20x%3D%22120%22%20y%3D%2286%22%20width%3D%22272%22%20height%3D%22340%22%20rx%3D%2234%22%20fill%3D%22%23fffaff%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22145%22%20width%3D%22208%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22205%22%20width%3D%22150%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22265%22%20width%3D%22188%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Crect%20x%3D%22152%22%20y%3D%22325%22%20width%3D%22132%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d7c8df%22/%3E%0A%20%20%3Cpath%20d%3D%22M325%20202l23%2023%2048-58%22%20fill%3D%22none%22%20stroke%3D%22%236b4a78%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ccircle%20cx%3D%22128%22%20cy%3D%2295%22%20r%3D%2214%22%20fill%3D%22%23f5edf8%22/%3E%0A%20%20%3Ccircle%20cx%3D%22384%22%20cy%3D%2295%22%20r%3D%2214%22%20fill%3D%22%23f5edf8%22/%3E%0A%3C/svg%3E">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%20%22Mein%20Aufgabentool%22%2C%20%22short_name%22%3A%20%22Mein%20Tag%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%23f3eef6%22%2C%20%22theme_color%22%3A%20%22%236b4a78%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22data%3Aimage/svg%2Bxml%2C%253Csvg%2520xmlns%253D%2522http%253A//www.w3.org/2000/svg%2522%2520viewBox%253D%25220%25200%2520512%2520512%2522%253E%250A%2520%2520%253Crect%2520width%253D%2522512%2522%2520height%253D%2522512%2522%2520rx%253D%2522108%2522%2520fill%253D%2522%25236b4a78%2522/%253E%250A%2520%2520%253Crect%2520x%253D%2522120%2522%2520y%253D%252286%2522%2520width%253D%2522272%2522%2520height%253D%2522340%2522%2520rx%253D%252234%2522%2520fill%253D%2522%2523fffaff%2522/%253E%250A%2520%2520%253Crect%2520x%253D%2522152%2522%2520y%253D%2522145%2522%2520width%253D%2522208%2522%2520height%253D%252218%2522%2520rx%253D%25229%2522%2520fill%253D%2522%2523d7c8df%2522/%253E%250A%2520%2520%253Crect%2520x%253D%2522152%2522%2520y%253D%2522205%2522%2520width%253D%2522150%2522%2520height%253D%252218%2522%2520rx%253D%25229%2522%2520fill%253D%2522%2523d7c8df%2522/%253E%250A%2520%2520%253Crect%2520x%253D%2522152%2522%2520y%253D%2522265%2522%2520width%253D%2522188%2522%2520height%253D%252218%2522%2520rx%253D%25229%2522%2520fill%253D%2522%2523d7c8df%2522/%253E%250A%2520%2520%253Crect%2520x%253D%2522152%2522%2520y%253D%2522325%2522%2520width%253D%2522132%2522%2520height%253D%252218%2522%2520rx%253D%25229%2522%2520fill%253D%2522%2523d7c8df%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M325%2520202l23%252023%252048-58%2522%2520fill%253D%2522none%2522%2520stroke%253D%2522%25236b4a78%2522%2520stroke-width%253D%252222%2522%2520stroke-linecap%253D%2522round%2522%2520stroke-linejoin%253D%2522round%2522/%253E%250A%2520%2520%253Ccircle%2520cx%253D%2522128%2522%2520cy%253D%252295%2522%2520r%253D%252214%2522%2520fill%253D%2522%2523f5edf8%2522/%253E%250A%2520%2520%253Ccircle%2520cx%253D%2522384%2522%2520cy%253D%252295%2522%2520r%253D%252214%2522%2520fill%253D%2522%2523f5edf8%2522/%253E%250A%253C/svg%253E%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image/svg%2Bxml%22%2C%20%22purpose%22%3A%20%22any%20maskable%22%7D%5D%7D">
+
+<style>
+:root {
+  --bg:#f3eef6;
+  --paper:#fffaff;
+  --ink:#2d2923;
+  --muted:#746b5f;
+  --line:#d7c8df;
+  --soft:#f5edf8;
+  --accent:#6b4a78;
+  --danger:#9b2c2c;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(180deg,#f4edf8,#f3eef6);
+  color:var(--ink);
+}
+.app{
+  max-width:1100px;
+  margin:0 auto;
+  padding:12px;
+}
+.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  margin-bottom:12px;
+}
+.day{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:12px;
+  padding:6px;
+  text-align:left;
+  cursor:pointer;
+}
+.day.active{
+  background:var(--accent);
+  color:white;
+}
+.day .weekday{
+  font-size:11px;
+  opacity:.8;
+}
+.day .date{
+  font-size:15px;
+  font-weight:bold;
+}
+.day .open{
+  font-size:10px;
+  opacity:.75;
+}
+.paper{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px;
+  box-shadow:0 6px 18px rgba(50,40,30,.07);
+}
+.title-row{
+  border-bottom:1px solid var(--line);
+  margin-bottom:12px;
+  padding-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+#title{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+.summary{
+  margin-top:3px;
+  font-size:12px;
+  color:var(--muted);
+}
+.columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+h3{
+  font-size:18px;
+  margin:0 0 8px 0;
+  padding-bottom:5px;
+  border-bottom:1px solid var(--line);
+}
+.task{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:center;
+  border:1px solid #e3ddd2;
+  border-radius:12px;
+  padding:7px 8px;
+  margin:6px 0;
+  background:white;
+}
+
+.task.arbeit{
+  border-left:7px solid #3f6f4a;
+}
+.task.privat{
+  border-left:7px solid #6a4c93;
+}
+.task-label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--muted);
+  margin-bottom:2px;
+}
+
+.task-text{
+  min-width:0;
+  word-break:break-word;
+}
+.task-text.done{
+  text-decoration:line-through;
+  color:#999;
+}
+.actions{
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+.btn{
+  border:1px solid var(--line);
+  background:var(--soft);
+  border-radius:8px;
+  padding:4px 8px;
+  cursor:pointer;
+  min-width:30px;
+}
+.btn.check.checked{
+  background:#e4eadf;
+}
+.btn.delete{
+  color:var(--danger);
+}
+.add-panel,.ideas-panel{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.65);
+  padding:10px;
+}
+.add-grid{
+  display:grid;
+  grid-template-columns:1fr 115px auto;
+  gap:8px;
+}
+input,select,textarea{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px;
+  background:white;
+  font-family:inherit;
+}
+.note-panel{
+  margin:10px 0 14px 0;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.55);
+  padding:8px;
+}
+.note-panel h3{
+  font-size:14px;
+  margin:0 0 5px 0;
+  padding-bottom:3px;
+}
+#dayNote{
+  width:100%;
+  min-height:46px;
+  resize:vertical;
+  font-size:12px;
+  line-height:1.3;
+}
+.edit-input{
+  width:100%;
+  padding:6px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:white;
+}
+.idea-head{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:8px;
+}
+.idea-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.idea-btn{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:999px;
+  padding:7px 10px;
+  cursor:pointer;
+}
+.settings-panel{
+  margin-top:0;
+  margin-bottom:14px;
+  border:1px solid #c8add4;
+  border-radius:16px;
+  background:#fbf2ff;
+  padding:10px;
+}
+.hidden{display:none}
+.settings-grid{
+  display:grid;
+  grid-template-columns:210px 1fr;
+  gap:12px;
+}
+.category-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.cat-btn{
+  text-align:left;
+  border:1px solid var(--line);
+  background:white;
+  border-radius:10px;
+  padding:7px;
+  cursor:pointer;
+}
+.cat-btn.active{
+  background:var(--accent);
+  color:white;
+  border-color:var(--accent);
+}
+.edit-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:6px;
+  margin:5px 0;
+}
+
+.work-recurring-panel{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:10px;
+}
+.recurring-row{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:12px;
+  padding:8px;
+  margin:8px 0;
+}
+.recurring-row input[type="text"]{
+  width:100%;
+  margin-bottom:6px;
+}
+.weekday-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  font-size:12px;
+}
+.weekday-row label{
+  display:flex;
+  gap:3px;
+  align-items:center;
+}
+
+.archive-panel{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.70);
+  padding:10px;
+}
+.archive-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.archive-entry{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
+  padding:8px;
+  margin:8px 0;
+}
+.archive-entry h4{
+  margin:0 0 6px 0;
+}
+.archive-entry ul{
+  margin:0;
+  padding-left:20px;
+}
+
+body[data-theme="lavendel"]{
+  --bg:#e8dcf2;
+  --paper:#fbf7ff;
+  --line:#b99bd0;
+  --soft:#eadff4;
+  --accent:#6a4c93;
+}
+body[data-theme="salbei"]{
+  --bg:#dceade;
+  --paper:#f8fff9;
+  --line:#9fbea5;
+  --soft:#dcecdf;
+  --accent:#3f6f4a;
+}
+body[data-theme="himmel"]{
+  --bg:#dcebf7;
+  --paper:#f8fcff;
+  --line:#9fc3df;
+  --soft:#dcecf8;
+  --accent:#3f74a3;
+}
+.theme-panel{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.65);
+  padding:10px;
+}
+.theme-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+.theme-choice{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:999px;
+  padding:7px 10px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+}
+.theme-dot{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:inline-block;
+  border:1px solid rgba(0,0,0,.12);
+}
+.theme-choice.active{
+  outline:2px solid var(--accent);
+}
+
+@media(max-width:760px){
+  .settings-grid{grid-template-columns:1fr}
+}
+
+.archive-panel{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.70);
+  padding:10px;
+}
+.archive-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.archive-entry{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
+  padding:8px;
+  margin:8px 0;
+}
+.archive-entry h4{
+  margin:0 0 6px 0;
+}
+.archive-entry ul{
+  margin:0;
+  padding-left:20px;
+}
+
+@media(max-width:760px){
+  .app{padding:9px}
+  .days{grid-template-columns:repeat(4,1fr)}
+  .columns{grid-template-columns:1fr}
+  .paper{padding:12px}
+  .add-grid{grid-template-columns:1fr}
+  .task{grid-template-columns:1fr auto}
+  .btn{padding:4px 7px;min-width:28px}
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+<div class="app">
+  <div id="days" class="days"></div>
+
+  <main class="paper">
+    <div class="title-row">
+      <div>
+        <h2 id="title"></h2>
+        <div id="summary" class="summary"></div>
+      </div>
+      <button class="btn" onclick="toggleSettings()">Einstellungen</button>
+    </div>
+
+    <div id="settingsPanel" class="settings-panel hidden">
+      <h3>Einstellungen: Ideenlisten bearbeiten</h3>
+      <div class="settings-grid">
+        <div>
+          <h4>Kategorien</h4>
+          <div id="settingsCategories" class="category-buttons"></div>
+          <div class="edit-row">
+            <input id="newCategoryInput" placeholder="Neue Kategorie">
+            <button class="btn" onclick="addCategory()">+</button>
+          </div>
+        </div>
+        <div>
+          <h4 id="settingsTitle">Ideen</h4>
+          <div id="settingsIdeas"></div>
+          <div class="edit-row">
+            <input id="newIdeaInput" placeholder="Neue Idee">
+            <button class="btn" onclick="addIdea()">+</button>
+          </div>
+          <button class="btn delete" onclick="deleteCategory()">Kategorie löschen</button>
+        </div>
+      </div>
+
+        <div class="work-recurring-panel">
+          <h4>Feste Aufgaben Arbeit</h4>
+          <div class="summary">Wiederkehrende Arbeitsaufgaben und Wochentage bearbeiten.</div>
+          <div id="workRecurringSettings"></div>
+          <div class="edit-row">
+            <input id="newWorkRecurringText" placeholder="Neue feste Arbeitsaufgabe">
+            <button class="btn" onclick="addWorkRecurring()">+</button>
+          </div>
+        </div>
+
+        <div class="work-recurring-panel">
+          <h4>Feste Aufgaben Privat</h4>
+          <div class="summary">Wiederkehrende private Aufgaben und Wochentage bearbeiten.</div>
+          <div id="privateRecurringSettings"></div>
+          <div class="edit-row">
+            <input id="newPrivateRecurringText" placeholder="Neue feste private Aufgabe">
+            <button class="btn" onclick="addPrivateRecurring()">+</button>
+          </div>
+        </div>
+    </div>
+
+    <section class="note-panel">
+      <h3>Notizen</h3>
+      <textarea id="dayNote" placeholder="Kurze Notiz …" oninput="saveDayNote()"></textarea>
+    </section>
+
+    <section>
+      <h3>Tagesaufgaben</h3>
+      <div id="tasks"></div>
+    </section>
+
+    <section class="add-panel">
+      <h3>Neue Aufgabe</h3>
+      <div class="add-grid">
+        <input id="newTaskText" placeholder="Aufgabe eintragen …" onkeydown="if(event.key==='Enter') addTaskFromInput()">
+        <select id="newTaskSection">
+          <option value="arbeit">Arbeit</option>
+          <option value="privat">Privat</option>
+        </select>
+        <button class="btn" onclick="addTaskFromInput()">Hinzufügen</button>
+      </div>
+    </section>
+
+    <section class="ideas-panel">
+      <h3>Ideen übernehmen</h3>
+      <div class="idea-head">
+        <select id="ideaCategory" onchange="renderIdeas()"></select>
+        
+      </div>
+      <div id="ideas" class="idea-list"></div>
+    </section>
+
+    <div class="archive-actions">
+      <button class="btn" onclick="archiveCurrentDay()">Aktuellen Tag archivieren</button>
+      <button class="btn" onclick="toggleArchive()">Archiv öffnen</button>
+    </div>
+
+    <section id="archivePanel" class="archive-panel hidden">
+      <h3>Archiv</h3>
+      <div class="summary">Gespeichert werden die erledigten Aufgaben des archivierten Tages, unkategorisiert als einfache Liste.</div>
+      <div id="archiveContent"></div>
+    </section>
+<section class="theme-panel">
+      <h3>Farbstimmung</h3>
+      <div class="theme-buttons">
+        <button class="theme-choice" onclick="setTheme('salbei')" data-theme-choice="salbei"><span class="theme-dot" style="background:#3f6f4a"></span>Salbei</button>
+        <button class="theme-choice" onclick="setTheme('himmel')" data-theme-choice="himmel"><span class="theme-dot" style="background:#3f74a3"></span>Himmel</button>
+        <button class="theme-choice" onclick="setTheme('lavendel')" data-theme-choice="lavendel"><span class="theme-dot" style="background:#6a4c93"></span>Lavendel</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const STORAGE_KEY = "daniela_tagesblatt_v4_2";
+const IDEAS_KEY = STORAGE_KEY + "_ideas";
+const WORK_RECURRING_KEY = STORAGE_KEY + "_work_recurring";
+const PRIVATE_RECURRING_KEY = STORAGE_KEY + "_private_recurring";
+const THEME_KEY = STORAGE_KEY + "_theme";
+const SYNC_ENABLED_KEY = STORAGE_KEY + "_firebase_sync_enabled";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAHgAgYB4YXvbBzWIc7rs3SrwIAkuSPvHs",
+  authDomain: "rueckrufliste-1caf7.firebaseapp.com",
+  projectId: "rueckrufliste-1caf7",
+  storageBucket: "rueckrufliste-1caf7.firebasestorage.app",
+  messagingSenderId: "889083662057",
+  appId: "1:889083662057:web:42656742c05d5f3f86ea78"
+};
+
+const FIREBASE_COLLECTION = "aufgabentool";
+const FIREBASE_DOC_ID = "hauptdaten";
+
+let db = null;
+let unsubscribeSync = null;
+let suppressFirebaseSave = false;
+let firebaseSaveTimer = null;
+
+let ideas = loadIdeas() || {
+  "körper": ["Füße eincremen", "kurz dehnen", "duschen mit Ruhe", "Massageball/Faszienrolle", "Epilieren"],
+  "sport": ["10 Minuten Spaziergang", "5 Minuten Mobilisation", "10 Kniebeugen", "YouTube Mini-Workout", "Treppenrunde"],
+  "haushalt": ["Küche 10 Minuten", "eine Schublade", "Pflanzen gießen", "Wäsche starten", "Bad kurz reinigen"],
+  "kreativ": ["Aquarell 10 Minuten", "Wackelzahn-Idee notieren", "häkeln", "kleine Skizze", "Fotoidee sammeln"],
+  "gesundheit": ["Tee trinken", "Vitamine nehmen", "Wasserflasche füllen", "früh ins Bett vorbereiten", "Obst schneiden"]
+};
+
+let workRecurring = loadWorkRecurring() || [
+  {id:"mails", text:"Mails", days:[1,2,3,4,5,6,0]},
+  {id:"rueckrufe", text:"Rückrufe", days:[1,2,3,4,5]}
+];
+
+let privateRecurring = loadPrivateRecurring() || [];
+
+let selectedDate = toISO(new Date());
+let selectedEditCategory = "haushalt";
+let data = loadData();
+
+function pad(n){return String(n).padStart(2,"0")}
+function loadIdeas(){
+  try{
+    const current = localStorage.getItem(IDEAS_KEY);
+    if(current) return JSON.parse(current);
+
+    // Migration aus älteren Zwischenversionen, falls dort bereits Ideen gespeichert wurden.
+    const old = localStorage.getItem("daniela_tagesblatt_v4_settings_ideas");
+    if(old){
+      localStorage.setItem(IDEAS_KEY, old);
+      return JSON.parse(old);
+    }
+  }catch(e){}
+  return null;
+}
+function saveIdeas(){
+  localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
+  scheduleFirebaseSave();
+}
+function loadWorkRecurring(){
+  try{
+    const current = localStorage.getItem(WORK_RECURRING_KEY);
+    if(current) return JSON.parse(current);
+  }catch(e){}
+  return null;
+}
+function saveWorkRecurring(){
+  localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
+  scheduleFirebaseSave();
+}
+function loadPrivateRecurring(){
+  try{
+    const current = localStorage.getItem(PRIVATE_RECURRING_KEY);
+    if(current) return JSON.parse(current);
+  }catch(e){}
+  return null;
+}
+function savePrivateRecurring(){
+  localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
+  scheduleFirebaseSave();
+}
+function toISO(date){return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`}
+function parseISO(iso){return new Date(iso+"T12:00:00")}
+function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d}
+function next14Days(){const today=new Date();return Array.from({length:14},(_,i)=>toISO(addDays(today,i)))}
+function weekday(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"short"}).format(parseISO(iso))}
+function longDate(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"}).format(parseISO(iso))}
+function isWeekday(iso){const d=parseISO(iso).getDay();return d>=1&&d<=5}
+
+function makeTask(text, section, category="", recurring=false){
+  return {id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()), text, section, category, done:false, recurring};
+}
+
+function defaultTasks(iso){
+  const list=[];
+  const weekdayNumber = parseISO(iso).getDay();
+  (workRecurring || []).forEach(item=>{
+    if((item.days || []).includes(weekdayNumber)){
+      list.push(makeTask(item.text,"arbeit","workrec_"+item.id,true));
+    }
+  });
+  Object.keys(ideas).forEach(cat=>{
+    list.push(makeTask(cat.charAt(0).toUpperCase()+cat.slice(1),"privat",cat,true));
+  });
+  (privateRecurring || []).forEach(item=>{
+    if((item.days || []).includes(weekdayNumber)){
+      list.push(makeTask(item.text,"privat","privrec_"+item.id,true));
+    }
+  });
+  return list;
+}
+
+function loadData(){
+  let loaded;
+  try{loaded=JSON.parse(localStorage.getItem(STORAGE_KEY))}catch(e){loaded=null}
+  if(!loaded||!loaded.byDate) loaded={byDate:{}};
+  if(!loaded.archive) loaded.archive=[];
+  if(!loaded.suppressedByDate) loaded.suppressedByDate={};
+  if(!loaded.notesByDate) loaded.notesByDate={};
+  next14Days().forEach(iso=>{
+    if(!loaded.byDate[iso]) loaded.byDate[iso]=defaultTasks(iso);
+  });
+  return loaded;
+}
+function save(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  scheduleFirebaseSave();
+}
+
+function render(){
+  renderDays();
+  renderTasks();
+  renderIdeaSelect();
+  renderIdeas();
+  renderSettings();
+  renderArchive();
+  renderDayNote();
+  applySavedTheme();
+}
+
+function renderDays(){
+  const holder=document.getElementById("days");
+  holder.innerHTML="";
+  next14Days().forEach(iso=>{
+    ensureWorkRecurringTasks(iso);
+    ensurePrivateRecurringTasks(iso);
+    const open=(data.byDate[iso]||[]).filter(t=>!t.done).length;
+    const b=document.createElement("button");
+    b.className="day"+(iso===selectedDate?" active":"");
+    b.onclick=()=>{selectedDate=iso;render()};
+    b.innerHTML=`<div class="weekday">${weekday(iso)}</div><div class="date">${iso.slice(8,10)}.${iso.slice(5,7)}</div>`;
+    holder.appendChild(b);
+  });
+}
+
+function isSuppressed(date, category){
+  return (data.suppressedByDate &&
+          data.suppressedByDate[date] &&
+          data.suppressedByDate[date].includes(category));
+}
+
+function ensureWorkRecurringTasks(date){
+  if(!data.byDate[date]) data.byDate[date]=defaultTasks(date);
+  const weekdayNumber = parseISO(date).getDay();
+
+  // alte Versionen der festen Aufgaben entfernen
+  data.byDate[date] = (data.byDate[date] || []).filter(t => {
+    if(!(t.section==="arbeit" && t.recurring===true)) return true;
+    if(t.category && t.category.startsWith("workrec_")) return true;
+    if(t.category==="mails" || t.category==="rückrufe") return false;
+    return true;
+  });
+
+  (workRecurring || []).forEach(item=>{
+    const category = "workrec_" + item.id;
+    const shouldExist = (item.days || []).includes(weekdayNumber);
+    const existing = data.byDate[date].find(t => t.section==="arbeit" && t.recurring===true && t.category===category);
+
+    if(shouldExist && !isSuppressed(date, category)){
+      if(existing){
+        existing.text = item.text;
+      }else{
+        data.byDate[date].unshift(makeTask(item.text,"arbeit",category,true));
+      }
+    }else{
+      data.byDate[date] = data.byDate[date].filter(t => !(t.section==="arbeit" && t.recurring===true && t.category===category));
+    }
+  });
+}
+
+function ensurePrivateRecurringTasks(date){
+  if(!data.byDate[date]) data.byDate[date]=defaultTasks(date);
+  const weekdayNumber = parseISO(date).getDay();
+
+  (privateRecurring || []).forEach(item=>{
+    const category = "privrec_" + item.id;
+    const shouldExist = (item.days || []).includes(weekdayNumber);
+    const existing = data.byDate[date].find(t => t.section==="privat" && t.recurring===true && t.category===category);
+
+    if(shouldExist && !isSuppressed(date, category)){
+      if(existing){
+        existing.text = item.text;
+      }else{
+        data.byDate[date].push(makeTask(item.text,"privat",category,true));
+      }
+    }else{
+      data.byDate[date] = data.byDate[date].filter(t => !(t.section==="privat" && t.recurring===true && t.category===category));
+    }
+  });
+}
+
+function renderTasks(){
+  if(!data.byDate[selectedDate]) data.byDate[selectedDate]=defaultTasks(selectedDate);
+  ensureWorkRecurringTasks(selectedDate);
+  ensurePrivateRecurringTasks(selectedDate);
+  Object.keys(ideas).forEach(cat=>{
+    const exists = data.byDate[selectedDate].some(t=>t.section==="privat" && t.category===cat);
+    if(!exists && !isSuppressed(selectedDate, cat)) {
+      data.byDate[selectedDate].push(makeTask(cat.charAt(0).toUpperCase()+cat.slice(1),"privat",cat,true));
+    }
+  });
+  const tasks=data.byDate[selectedDate];
+  document.getElementById("title").textContent=longDate(selectedDate);
+  document.getElementById("summary").textContent="";
+  renderUnifiedList();
+}
+
+function renderUnifiedList(){
+  const holder=document.getElementById("tasks");
+  holder.innerHTML="";
+  const list=data.byDate[selectedDate]||[];
+  list.forEach((task,index)=>{
+    // Wiederkehrende private Aufgaben aus gelöschten Ideen-Kategorien ausblenden.
+    // Feste private Aufgaben aus den Einstellungen beginnen mit "privrec_" und bleiben sichtbar.
+    if(task.section === "privat" &&
+       task.recurring === true &&
+       task.category &&
+       !task.category.startsWith("privrec_") &&
+       !ideas[task.category]) return;
+
+    const row=document.createElement("div");
+    row.className="task " + (task.section || "");
+    const label = task.section === "arbeit" ? "Arbeit" : "Privat";
+    row.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn check ${task.done?'checked':''}" title="Erledigt / offen">✓</button>
+        <div style="flex:1;min-width:0;">
+          <div class="task-label">${label}</div>
+          <div class="task-text ${task.done?'done':''}"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn edit" title="Text bearbeiten">✎</button>
+        <button class="btn up" title="Nach oben">↑</button>
+        <button class="btn move" title="Auf morgen verschieben">→</button>
+        <button class="btn delete" title="Für heute löschen">×</button>
+      </div>`;
+    row.querySelector(".task-text").textContent=task.text;
+    row.querySelector(".edit").onclick=()=>editTaskText(index);
+    row.querySelector(".check").onclick=()=>toggleDone(index);
+    row.querySelector(".up").onclick=()=>moveUp(index);
+    row.querySelector(".move").onclick=()=>moveTomorrow(index);
+    row.querySelector(".delete").onclick=()=>deleteTask(index);
+    holder.appendChild(row);
+  });
+}
+
+function editTaskText(index){
+  const task = data.byDate[selectedDate][index];
+  if(!task) return;
+
+  const neuerText = prompt("Aufgabe bearbeiten:", task.text);
+  if(neuerText === null) return;
+
+  const trimmed = neuerText.trim();
+  if(!trimmed) return;
+
+  task.text = trimmed;
+  save();
+  render();
+}
+
+function toggleDone(index){
+  const list = data.byDate[selectedDate];
+  const task = list[index];
+  if(!task) return;
+
+  const wasDone = task.done;
+  task.done = !task.done;
+
+  // Wenn eine Aufgabe neu erledigt wird, wandert sie an das Ende der gemeinsamen Liste.
+  // Wird das Häkchen wieder entfernt, bleibt sie dort.
+  if(!wasDone && task.done){
+    const [movedTask] = list.splice(index, 1);
+    list.push(movedTask);
+  }
+
+  save();render();
+}
+
+function moveUp(index){
+  if(index<=0)return;
+  const list=data.byDate[selectedDate];
+  [list[index],list[index-1]]=[list[index-1],list[index]];
+  save();render();
+}
+
+function moveTomorrow(index){
+  const list=data.byDate[selectedDate];
+  const task=list[index];
+  const tomorrow=toISO(addDays(parseISO(selectedDate),1));
+  if(!data.byDate[tomorrow]) data.byDate[tomorrow]=defaultTasks(tomorrow);
+  data.byDate[tomorrow].push({...task,id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()),done:false,recurring:false});
+  list.splice(index,1);
+  save();render();
+}
+
+function deleteTask(index){
+  const task = data.byDate[selectedDate][index];
+
+  // Wiederkehrende Aufgaben werden nur für den aktuellen Tag ausgeblendet.
+  // An den nächsten vorgesehenen Tagen erscheinen sie wieder automatisch.
+  if(task && task.recurring === true && task.category){
+    if(!data.suppressedByDate) data.suppressedByDate = {};
+    if(!data.suppressedByDate[selectedDate]) data.suppressedByDate[selectedDate] = [];
+    if(!data.suppressedByDate[selectedDate].includes(task.category)){
+      data.suppressedByDate[selectedDate].push(task.category);
+    }
+  }
+
+  data.byDate[selectedDate].splice(index,1);
+  save();render();
+}
+
+function addTaskFromInput(){
+  const input=document.getElementById("newTaskText");
+  const text=input.value.trim();
+  if(!text)return;
+  const section=document.getElementById("newTaskSection").value;
+  const newTask = makeTask(text,section,"",false);
+
+  // Neue manuell eingetragene Aufgaben werden ganz oben in die gemeinsame Liste eingefügt.
+  const list = data.byDate[selectedDate];
+  list.unshift(newTask);
+
+  input.value="";
+  save();render();
+}
+
+function addIdeaAsTask(idea, category){
+  if(data.suppressedByDate && data.suppressedByDate[selectedDate]){
+    data.suppressedByDate[selectedDate] = data.suppressedByDate[selectedDate].filter(cat => cat !== category);
+  }
+  const list=data.byDate[selectedDate];
+  const placeholderIndex=list.findIndex(t=>
+    t.section==="privat" &&
+    t.category===category &&
+    t.recurring===true &&
+    t.done===false &&
+    t.text.toLowerCase()===category
+  );
+  if(placeholderIndex>=0){
+    list[placeholderIndex]={...list[placeholderIndex],text:idea,recurring:false};
+  }else{
+    list.push(makeTask(idea,"privat",category,false));
+  }
+  save();render();
+}
+
+function renderIdeaSelect(){
+  const select=document.getElementById("ideaCategory");
+  const previous=select.value || selectedEditCategory;
+  select.innerHTML="";
+  Object.keys(ideas).forEach(cat=>{
+    const opt=document.createElement("option");
+    opt.value=cat;
+    opt.textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
+    select.appendChild(opt);
+  });
+  if(ideas[previous]) select.value=previous;
+}
+
+function renderIdeas(){
+  const select=document.getElementById("ideaCategory");
+  const cat=select.value || Object.keys(ideas)[0];
+  const holder=document.getElementById("ideas");
+  holder.innerHTML="";
+  (ideas[cat]||[]).forEach(idea=>{
+    const b=document.createElement("button");
+    b.className="idea-btn";
+    b.textContent="+ "+idea;
+    b.onclick=()=>addIdeaAsTask(idea,cat);
+    holder.appendChild(b);
+  });
+}
+
+function toggleSettings(){
+  document.getElementById("settingsPanel").classList.toggle("hidden");
+}
+
+function renderSettings(){
+  renderWorkRecurringSettings();
+  renderPrivateRecurringSettings();
+  const cats=Object.keys(ideas);
+  if(!ideas[selectedEditCategory]) selectedEditCategory=cats[0] || "";
+  const catHolder=document.getElementById("settingsCategories");
+  catHolder.innerHTML="";
+  cats.forEach(cat=>{
+    const b=document.createElement("button");
+    b.className="cat-btn"+(cat===selectedEditCategory?" active":"");
+    b.textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
+    b.onclick=()=>{selectedEditCategory=cat;render()};
+    catHolder.appendChild(b);
+  });
+
+  document.getElementById("settingsTitle").textContent = selectedEditCategory ? "Ideen: "+selectedEditCategory.charAt(0).toUpperCase()+selectedEditCategory.slice(1) : "Keine Kategorie";
+  const ideaHolder=document.getElementById("settingsIdeas");
+  ideaHolder.innerHTML="";
+  (ideas[selectedEditCategory]||[]).forEach((idea,i)=>{
+    const row=document.createElement("div");
+    row.className="edit-row";
+    row.innerHTML='<input><button class="btn delete">×</button>';
+    const input=row.querySelector("input");
+    input.value=idea;
+    input.onchange=()=>{ideas[selectedEditCategory][i]=input.value.trim();saveIdeas();render()};
+    row.querySelector("button").onclick=()=>{ideas[selectedEditCategory].splice(i,1);saveIdeas();render()};
+    ideaHolder.appendChild(row);
+  });
+}
+
+function renderWorkRecurringSettings(){
+  const holder = document.getElementById("workRecurringSettings");
+  if(!holder) return;
+  holder.innerHTML = "";
+
+  const names = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+  (workRecurring || []).forEach((item, index)=>{
+    const div = document.createElement("div");
+    div.className = "recurring-row";
+
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.value = item.text;
+    textInput.onchange = () => {
+      const val = textInput.value.trim();
+      if(val) item.text = val;
+      saveWorkRecurring();
+      updateAllWorkRecurringInVisibleDays();
+      render();
+    };
+    div.appendChild(textInput);
+
+    const week = document.createElement("div");
+    week.className = "weekday-row";
+
+    names.forEach((name, dayNumber)=>{
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = (item.days || []).includes(dayNumber);
+      cb.onchange = () => {
+        if(cb.checked){
+          if(!item.days.includes(dayNumber)) item.days.push(dayNumber);
+        }else{
+          item.days = item.days.filter(d => d !== dayNumber);
+        }
+        saveWorkRecurring();
+        updateAllWorkRecurringInVisibleDays();
+        render();
+      };
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(name));
+      week.appendChild(label);
+    });
+
+    const del = document.createElement("button");
+    del.className = "btn delete";
+    del.textContent = "löschen";
+    del.onclick = () => {
+      if(!confirm("Feste Arbeitsaufgabe wirklich löschen?")) return;
+      const deletedId = item.id;
+      workRecurring.splice(index,1);
+      Object.keys(data.byDate || {}).forEach(date=>{
+        data.byDate[date] = (data.byDate[date] || []).filter(task => !(task.section==="arbeit" && task.recurring===true && task.category==="workrec_"+deletedId));
+      });
+      saveWorkRecurring();
+      save();
+      render();
+    };
+    week.appendChild(del);
+
+    div.appendChild(week);
+    holder.appendChild(div);
+  });
+}
+
+function addWorkRecurring(){
+  const input = document.getElementById("newWorkRecurringText");
+  const text = input.value.trim();
+  if(!text) return;
+
+  const id = "w_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,6);
+  workRecurring.push({id, text, days:[1,2,3,4,5]});
+  input.value = "";
+  saveWorkRecurring();
+  updateAllWorkRecurringInVisibleDays();
+  render();
+}
+
+function renderPrivateRecurringSettings(){
+  const holder = document.getElementById("privateRecurringSettings");
+  if(!holder) return;
+  holder.innerHTML = "";
+
+  const names = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+  (privateRecurring || []).forEach((item, index)=>{
+    const div = document.createElement("div");
+    div.className = "recurring-row";
+
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.value = item.text;
+    textInput.onchange = () => {
+      const val = textInput.value.trim();
+      if(val) item.text = val;
+      savePrivateRecurring();
+      updateAllPrivateRecurringInVisibleDays();
+      render();
+    };
+    div.appendChild(textInput);
+
+    const week = document.createElement("div");
+    week.className = "weekday-row";
+
+    names.forEach((name, dayNumber)=>{
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = (item.days || []).includes(dayNumber);
+      cb.onchange = () => {
+        if(cb.checked){
+          if(!item.days.includes(dayNumber)) item.days.push(dayNumber);
+        }else{
+          item.days = item.days.filter(d => d !== dayNumber);
+        }
+        savePrivateRecurring();
+        updateAllPrivateRecurringInVisibleDays();
+        render();
+      };
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(name));
+      week.appendChild(label);
+    });
+
+    const del = document.createElement("button");
+    del.className = "btn delete";
+    del.textContent = "löschen";
+    del.onclick = () => {
+      if(!confirm("Feste private Aufgabe wirklich löschen?")) return;
+      const deletedId = item.id;
+      privateRecurring.splice(index,1);
+      Object.keys(data.byDate || {}).forEach(date=>{
+        data.byDate[date] = (data.byDate[date] || []).filter(task => !(task.section==="privat" && task.recurring===true && task.category==="privrec_"+deletedId));
+      });
+      savePrivateRecurring();
+      save();
+      render();
+    };
+    week.appendChild(del);
+
+    div.appendChild(week);
+    holder.appendChild(div);
+  });
+}
+
+function addPrivateRecurring(){
+  const input = document.getElementById("newPrivateRecurringText");
+  const text = input.value.trim();
+  if(!text) return;
+
+  const id = "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,6);
+  privateRecurring.push({id, text, days:[1,2,3,4,5,6,0]});
+  input.value = "";
+  savePrivateRecurring();
+  updateAllPrivateRecurringInVisibleDays();
+  render();
+}
+
+function updateAllPrivateRecurringInVisibleDays(){
+  next14Days().forEach(iso => ensurePrivateRecurringTasks(iso));
+  save();
+}
+
+function updateAllWorkRecurringInVisibleDays(){
+  next14Days().forEach(iso => ensureWorkRecurringTasks(iso));
+  save();
+}
+
+function addIdea(){
+  const input=document.getElementById("newIdeaInput");
+  const val=input.value.trim();
+  if(!val || !selectedEditCategory) return;
+  ideas[selectedEditCategory].push(val);
+  input.value="";
+  saveIdeas();
+  render();
+}
+
+function addCategory(){
+  const input=document.getElementById("newCategoryInput");
+  const cat=input.value.trim().toLowerCase();
+  if(!cat || ideas[cat]) return;
+  ideas[cat]=[];
+  selectedEditCategory=cat;
+  input.value="";
+  saveIdeas();
+  render();
+}
+
+function deleteCategory(){
+  if(!selectedEditCategory) return;
+  if(!confirm("Kategorie wirklich löschen? Bestehende Tagesaufgaben bleiben erhalten. Wiederkehrende Platzhalter dieser Kategorie werden aus den Tagen entfernt.")) return;
+
+  const deletedCategory = selectedEditCategory;
+  delete ideas[deletedCategory];
+
+  // Bereits angelegte wiederkehrende Platzhalter dieser Kategorie aus allen sichtbaren Tagen entfernen.
+  // Normale Aufgaben bleiben erhalten.
+  Object.keys(data.byDate || {}).forEach(date => {
+    data.byDate[date] = (data.byDate[date] || []).filter(task => {
+      return !(task.section === "privat" && task.category === deletedCategory && task.recurring === true);
+    });
+  });
+
+  // Eventuelle Tages-Ausblendungen dieser Kategorie ebenfalls bereinigen.
+  if(data.suppressedByDate){
+    Object.keys(data.suppressedByDate).forEach(date => {
+      data.suppressedByDate[date] = (data.suppressedByDate[date] || []).filter(cat => cat !== deletedCategory);
+    });
+  }
+
+  selectedEditCategory=Object.keys(ideas)[0] || "";
+  saveIdeas();
+  save();
+  render();
+}
+
+function renderDayNote(){
+  const field = document.getElementById("dayNote");
+  if(!field) return;
+  if(!data.notesByDate) data.notesByDate = {};
+  field.value = data.notesByDate[selectedDate] || "";
+}
+
+function saveDayNote(){
+  const field = document.getElementById("dayNote");
+  if(!field) return;
+  if(!data.notesByDate) data.notesByDate = {};
+  data.notesByDate[selectedDate] = field.value;
+  save();
+}
+
+function archiveCurrentDay(){
+  const tasks = data.byDate[selectedDate] || [];
+  const doneTasks = tasks.filter(t => t.done).map(t => t.text);
+
+  if(doneTasks.length === 0){
+    alert("Für diesen Tag sind noch keine erledigten Aufgaben vorhanden.");
+    return;
+  }
+
+  const existingIndex = data.archive.findIndex(e => e.date === selectedDate);
+  const entry = {
+    date: selectedDate,
+    label: longDate(selectedDate),
+    tasks: doneTasks,
+    archivedAt: new Date().toISOString()
+  };
+
+  if(existingIndex >= 0){
+    if(!confirm("Für diesen Tag gibt es bereits einen Archiveintrag. Überschreiben?")) return;
+    data.archive[existingIndex] = entry;
+  } else {
+    data.archive.push(entry);
+  }
+
+  save();
+  renderArchive();
+  alert("Tag wurde archiviert.");
+}
+
+function toggleArchive(){
+  document.getElementById("archivePanel").classList.toggle("hidden");
+  renderArchive();
+}
+
+function renderArchive(){
+  const holder = document.getElementById("archiveContent");
+  if(!holder) return;
+  const entries = (data.archive || []).slice().sort((a,b) => b.date.localeCompare(a.date));
+  holder.innerHTML = "";
+
+  if(entries.length === 0){
+    holder.innerHTML = '<div class="summary">Noch keine archivierten Tage.</div>';
+    return;
+  }
+
+  entries.forEach((entry, index) => {
+    const div = document.createElement("div");
+    div.className = "archive-entry";
+    const items = (entry.tasks || []).map(t => "<li>" + escapeHtml(t) + "</li>").join("");
+    div.innerHTML = "<h4>" + escapeHtml(entry.label || entry.date) + "</h4><ul>" + items + "</ul><button class='btn delete'>Archiveintrag löschen</button>";
+    div.querySelector("button").onclick = () => {
+      if(!confirm("Archiveintrag löschen?")) return;
+      const realIndex = data.archive.findIndex(e => e.date === entry.date);
+      if(realIndex >= 0) data.archive.splice(realIndex,1);
+      save();
+      renderArchive();
+    };
+    holder.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+
+
+function collectBackupData(){
+  return {
+    version: "mein-tag-backup-1",
+    createdAt: new Date().toISOString(),
+    storageKey: STORAGE_KEY,
+    data: data,
+    ideas: ideas,
+    workRecurring: workRecurring,
+    privateRecurring: privateRecurring,
+    theme: localStorage.getItem(THEME_KEY) || "lavendel"
+  };
+}
+
+function createBackup(){
+  const backup = collectBackupData();
+  const text = JSON.stringify(backup, null, 2);
+  const blob = new Blob([text], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  const today = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = "mein-tag-backup-" + today + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function loadBackupFile(event){
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const backup = JSON.parse(e.target.result);
+
+      if(!backup || backup.version !== "mein-tag-backup-1"){
+        alert("Diese Datei sieht nicht wie eine passende Mein-Tag-Datensicherung aus.");
+        return;
+      }
+
+      if(!confirm("Datensicherung wirklich laden? Der aktuelle lokale Stand wird dadurch ersetzt.")){
+        return;
+      }
+
+      suppressFirebaseSave = true;
+      data = backup.data || {byDate:{}};
+      ideas = backup.ideas || ideas;
+      workRecurring = backup.workRecurring || workRecurring;
+      privateRecurring = backup.privateRecurring || privateRecurring;
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
+      localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
+      localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
+
+      if(backup.theme){
+        localStorage.setItem(THEME_KEY, backup.theme);
+      }
+
+      suppressFirebaseSave = false;
+      applySavedTheme();
+      render();
+      alert("Datensicherung wurde geladen. Wenn das die richtigen Daten sind, klicke jetzt auf „Lokale Daten nach Firebase übernehmen“.");
+    }catch(err){
+      alert("Die Datensicherung konnte nicht gelesen werden.");
+    }finally{
+      event.target.value = "";
+      suppressFirebaseSave = false;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function setSyncStatus(text){
+  const el = document.getElementById("syncStatus");
+  if(el) el.textContent = text;
+}
+
+function initializeFirebase(){
+  try{
+    if(!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+
+    db.enablePersistence({synchronizeTabs:true}).catch(function(err){
+      console.warn("Offline-Persistence konnte nicht aktiviert werden:", err);
+    });
+
+    setSyncStatus("Firebase bereit.");
+    if(localStorage.getItem(SYNC_ENABLED_KEY) === "true"){
+      startRealtimeSync();
+    }
+  }catch(err){
+    console.error(err);
+    setSyncStatus("Firebase konnte nicht gestartet werden.");
+  }
+}
+
+function firebaseDocRef(){
+  if(!db) initializeFirebase();
+  return db.collection(FIREBASE_COLLECTION).doc(FIREBASE_DOC_ID);
+}
+
+function collectFullState(){
+  return {
+    version: "mein-tag-firebase-1",
+    updatedAt: new Date().toISOString(),
+    data: data,
+    ideas: ideas,
+    workRecurring: workRecurring,
+    privateRecurring: privateRecurring,
+    theme: localStorage.getItem(THEME_KEY) || "lavendel"
+  };
+}
+
+function applyFullState(state){
+  if(!state) return;
+
+  suppressFirebaseSave = true;
+
+  data = state.data || {byDate:{}};
+  ideas = state.ideas || ideas;
+  workRecurring = state.workRecurring || workRecurring;
+  privateRecurring = state.privateRecurring || privateRecurring;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
+  localStorage.setItem(WORK_RECURRING_KEY, JSON.stringify(workRecurring));
+  localStorage.setItem(PRIVATE_RECURRING_KEY, JSON.stringify(privateRecurring));
+
+  if(state.theme){
+    localStorage.setItem(THEME_KEY, state.theme);
+  }
+
+  applySavedTheme();
+  render();
+
+  suppressFirebaseSave = false;
+}
+
+async function uploadCurrentToFirebase(){
+  try{
+    if(!confirm("Aktuelle lokale Daten nach Firebase übernehmen? Dadurch wird der Firebase-Stand ersetzt.")) return;
+    setSyncStatus("Übertrage lokale Daten nach Firebase …");
+    await firebaseDocRef().set(collectFullState());
+    localStorage.setItem(SYNC_ENABLED_KEY, "true");
+    startRealtimeSync();
+    setSyncStatus("Synchronisation aktiv.");
+    alert("Lokale Daten wurden nach Firebase übernommen.");
+  }catch(err){
+    console.error(err);
+    setSyncStatus("Fehler beim Hochladen nach Firebase.");
+    alert("Fehler beim Hochladen nach Firebase.");
+  }
+}
+
+async function loadFromFirebase(){
+  try{
+    if(!confirm("Daten aus Firebase laden? Der aktuelle lokale Stand dieses Geräts wird ersetzt.")) return;
+    setSyncStatus("Lade Daten aus Firebase …");
+    const snap = await firebaseDocRef().get();
+    if(!snap.exists){
+      setSyncStatus("In Firebase sind noch keine Aufgabentool-Daten vorhanden.");
+      alert("In Firebase sind noch keine Aufgabentool-Daten vorhanden.");
+      return;
+    }
+    applyFullState(snap.data());
+    localStorage.setItem(SYNC_ENABLED_KEY, "true");
+    startRealtimeSync();
+    setSyncStatus("Synchronisation aktiv.");
+    alert("Daten aus Firebase wurden geladen.");
+  }catch(err){
+    console.error(err);
+    setSyncStatus("Fehler beim Laden aus Firebase.");
+    alert("Fehler beim Laden aus Firebase.");
+  }
+}
+
+function startRealtimeSync(){
+  if(!db) initializeFirebase();
+  if(unsubscribeSync) return;
+
+  unsubscribeSync = firebaseDocRef().onSnapshot(function(snap){
+    if(!snap.exists) return;
+    if(suppressFirebaseSave) return;
+
+    setSyncStatus("Synchronisation aktiv.");
+    applyFullState(snap.data());
+  }, function(err){
+    console.error(err);
+    setSyncStatus("Synchronisation unterbrochen.");
+  });
+}
+
+function scheduleFirebaseSave(){
+  if(suppressFirebaseSave) return;
+  if(localStorage.getItem(SYNC_ENABLED_KEY) !== "true") return;
+  if(!db) return;
+
+  clearTimeout(firebaseSaveTimer);
+  firebaseSaveTimer = setTimeout(async function(){
+    try{
+      await firebaseDocRef().set(collectFullState());
+      setSyncStatus("Synchronisation aktiv. Letzte Änderung gespeichert.");
+    }catch(err){
+      console.error(err);
+      setSyncStatus("Änderung lokal gespeichert; Firebase später erneut versuchen.");
+    }
+  }, 700);
+}
+
+
+function applySavedTheme(){
+  let theme = localStorage.getItem(THEME_KEY) || "salbei";
+  if(!["salbei","himmel","lavendel"].includes(theme)){
+    theme = "salbei";
+    localStorage.setItem(THEME_KEY, theme);
+  }
+  document.body.setAttribute("data-theme", theme);
+  document.querySelectorAll("[data-theme-choice]").forEach(btn=>{
+    btn.classList.toggle("active", btn.getAttribute("data-theme-choice") === theme);
+  });
+}
+
+function setTheme(theme){
+  localStorage.setItem(THEME_KEY, theme);
+  applySavedTheme();
+  scheduleFirebaseSave();
+}
+
+initializeFirebase();
+applySavedTheme();
+render();
+save();
+</script>
+</body>
+</html>
