@@ -81,6 +81,12 @@ body{
   gap:8px;
   align-items:flex-start;
 }
+.title-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 #title{
   margin:0;
   font-size:18px;
@@ -428,7 +434,10 @@ body[data-theme="himmel"]{
         <h2 id="title"></h2>
         <div id="summary" class="summary"></div>
       </div>
-      <button class="btn" onclick="toggleSettings()">Einstellungen</button>
+      <div class="title-actions">
+        <button class="btn" onclick="printCurrentDay()">Tag drucken</button>
+        <button class="btn" onclick="toggleSettings()">Einstellungen</button>
+      </div>
     </div>
 
     <div id="settingsPanel" class="settings-panel hidden">
@@ -1263,6 +1272,150 @@ function escapeHtml(str){
     "\"":"&quot;",
     "'":"&#039;"
   }[m]));
+}
+
+function printCurrentDay(){
+  const tasks = data.byDate[selectedDate] || [];
+  const note = (data.notesByDate && data.notesByDate[selectedDate]) || "";
+
+  const taskRows = tasks.map(task => {
+    const section = task.section === "arbeit" ? "Arbeit" : "Privat";
+    const sectionClass = task.section === "arbeit" ? "arbeit" : "privat";
+    const doneClass = task.done ? " done" : "";
+    const checkbox = task.done ? "&#9745;" : "&#9744;";
+    return `
+      <li class="print-task ${sectionClass}${doneClass}">
+        <span class="print-check">${checkbox}</span>
+        <span class="print-task-content">
+          <span class="print-section">${section}</span>
+          <span class="print-text">${escapeHtml(task.text)}</span>
+        </span>
+      </li>`;
+  }).join("");
+
+  const noteContent = note.trim()
+    ? `<div class="print-note-text">${escapeHtml(note).replace(/\r?\n/g, "<br>")}</div>`
+    : `<div class="print-note-empty"></div>`;
+
+  const printWindow = window.open("", "_blank", "width=850,height=950");
+  if(!printWindow){
+    alert("Das Druckfenster wurde vom Browser blockiert. Bitte Pop-ups für diese App erlauben und erneut versuchen.");
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(`<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>${escapeHtml(longDate(selectedDate))}</title>
+  <style>
+    @page { size: A4 portrait; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #222;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 12pt;
+    }
+    h1 {
+      margin: 0 0 7mm;
+      padding-bottom: 3mm;
+      border-bottom: 1px solid #999;
+      font-size: 19pt;
+      font-weight: 600;
+    }
+    .print-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .print-task {
+      display: flex;
+      gap: 3mm;
+      align-items: flex-start;
+      margin: 0 0 3mm;
+      padding: 2.5mm 3mm;
+      border: 1px solid #bbb;
+      border-left-width: 4mm;
+      border-radius: 3mm;
+      break-inside: avoid;
+    }
+    .print-task.arbeit { border-left-color: #3f6f4a; }
+    .print-task.privat { border-left-color: #6a4c93; }
+    .print-check {
+      flex: 0 0 auto;
+      font-size: 16pt;
+      line-height: 1;
+    }
+    .print-task-content {
+      display: block;
+      min-width: 0;
+    }
+    .print-section {
+      display: block;
+      margin-bottom: 1mm;
+      color: #666;
+      font-size: 8pt;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .print-text {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+    .print-task.done {
+      color: #777;
+      background: #f1f1f1;
+    }
+    .print-task.done .print-text {
+      text-decoration: line-through;
+    }
+    .print-notes {
+      margin-top: 8mm;
+      break-inside: avoid;
+    }
+    .print-notes h2 {
+      margin: 0 0 2mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px solid #bbb;
+      font-size: 13pt;
+    }
+    .print-note-text {
+      min-height: 18mm;
+      padding: 2mm 0;
+      font-size: 10pt;
+      line-height: 1.4;
+      white-space: normal;
+    }
+    .print-note-empty {
+      min-height: 24mm;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 7mm,
+        #ccc 7.2mm
+      );
+    }
+    @media print {
+      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(longDate(selectedDate))}</h1>
+  <ul class="print-list">${taskRows || "<li>Keine Aufgaben eingetragen.</li>"}</ul>
+  <section class="print-notes">
+    <h2>Notizen</h2>
+    ${noteContent}
+  </section>
+</body>
+</html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.addEventListener("afterprint", () => printWindow.close());
+  setTimeout(() => printWindow.print(), 250);
 }
 
 
