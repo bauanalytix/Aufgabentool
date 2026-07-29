@@ -422,9 +422,9 @@ body[data-theme="himmel"]{
 
 @media print{
   @page{size:A4 portrait;margin:16mm;}
-  body.printing{background:#fff !important;}
-  body.printing .app{display:none !important;}
-  body.printing #printArea{display:block !important;}
+  html, body{margin:0 !important;padding:0 !important;background:#fff !important;}
+  body.printing > *:not(#printArea){display:none !important;}
+  body.printing #printArea{display:block !important;margin:0 !important;padding:0 !important;}
   body.printing #printArea,
   body.printing #printArea *{visibility:visible !important;}
   .print-sheet{font-family:Arial,sans-serif;color:#222;font-size:12pt;}
