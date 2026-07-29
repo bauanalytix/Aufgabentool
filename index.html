@@ -420,19 +420,12 @@ body[data-theme="himmel"]{
 }
 #printArea{display:none;}
 
-#printArea{display:none;}
-
 @media print{
   @page{size:A4 portrait;margin:16mm;}
   html, body{margin:0 !important;padding:0 !important;background:#fff !important;}
-  body.printing *{visibility:hidden !important;}
-  body.printing #printArea,
-  body.printing #printArea *{visibility:visible !important;}
-  body.printing #printArea{
+  body > .app{display:none !important;}
+  #printArea{
     display:block !important;
-    position:absolute !important;
-    left:0 !important;
-    top:0 !important;
     width:100% !important;
     margin:0 !important;
     padding:0 !important;
@@ -474,7 +467,7 @@ body[data-theme="himmel"]{
       </div>
       <div class="title-actions">
         <button class="btn" onclick="printCurrentDay()">Tag drucken</button>
-        <button class="btn" onclick="toggleSettings()">Einstellungen</button>
+        <button class="btn" onclick="archiveCurrentDay()">Tag archivieren</button>
       </div>
     </div>
 
@@ -553,7 +546,7 @@ body[data-theme="himmel"]{
     </section>
 
     <div class="archive-actions">
-      <button class="btn" onclick="archiveCurrentDay()">Aktuellen Tag archivieren</button>
+      <button class="btn" onclick="toggleSettings()">Einstellungen</button>
       <button class="btn" onclick="toggleArchive()">Archiv öffnen</button>
     </div>
 
@@ -572,6 +565,8 @@ body[data-theme="himmel"]{
     </section>
   </main>
 </div>
+
+<div id="printArea" aria-hidden="true"></div>
 
 <script>
 const STORAGE_KEY = "daniela_tagesblatt_v4_2";
@@ -1351,15 +1346,6 @@ function printCurrentDay(){
         ${noteContent}
       </section>
     </div>`;
-
-  document.body.classList.add("printing");
-
-  const cleanup = () => {
-    document.body.classList.remove("printing");
-    window.removeEventListener("afterprint", cleanup);
-  };
-
-  window.addEventListener("afterprint", cleanup);
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
