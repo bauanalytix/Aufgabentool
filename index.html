@@ -673,9 +673,6 @@ function defaultTasks(iso){
       list.push(makeTask(item.text,"arbeit","workrec_"+item.id,true));
     }
   });
-  Object.keys(ideas).forEach(cat=>{
-    list.push(makeTask(cat.charAt(0).toUpperCase()+cat.slice(1),"privat",cat,true));
-  });
   (privateRecurring || []).forEach(item=>{
     if((item.days || []).includes(weekdayNumber)){
       list.push(makeTask(item.text,"privat","privrec_"+item.id,true));
@@ -699,6 +696,24 @@ function loadData(){
 function save(){
   localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
   scheduleFirebaseSave();
+}
+
+function removeAutomaticIdeaPlaceholders(){
+  let changed = false;
+  Object.keys(data.byDate || {}).forEach(date => {
+    const before = data.byDate[date] || [];
+    const after = before.filter(task => !(
+      task.section === "privat" &&
+      task.recurring === true &&
+      task.category &&
+      !task.category.startsWith("privrec_")
+    ));
+    if(after.length !== before.length){
+      data.byDate[date] = after;
+      changed = true;
+    }
+  });
+  if(changed) save();
 }
 
 function render(){
@@ -787,12 +802,6 @@ function renderTasks(){
   if(!data.byDate[selectedDate]) data.byDate[selectedDate]=defaultTasks(selectedDate);
   ensureWorkRecurringTasks(selectedDate);
   ensurePrivateRecurringTasks(selectedDate);
-  Object.keys(ideas).forEach(cat=>{
-    const exists = data.byDate[selectedDate].some(t=>t.section==="privat" && t.category===cat);
-    if(!exists && !isSuppressed(selectedDate, cat)) {
-      data.byDate[selectedDate].push(makeTask(cat.charAt(0).toUpperCase()+cat.slice(1),"privat",cat,true));
-    }
-  });
   const tasks=data.byDate[selectedDate];
   document.getElementById("title").textContent=longDate(selectedDate);
   document.getElementById("summary").textContent="";
@@ -1590,6 +1599,7 @@ function setTheme(theme){
   scheduleFirebaseSave();
 }
 
+removeAutomaticIdeaPlaceholders();
 initializeFirebase();
 applySavedTheme();
 render();
