@@ -126,6 +126,15 @@ h3{
 .task.privat{
   border-left:7px solid #6a4c93;
 }
+.task.termin{
+  border-left:7px solid #b54444;
+  border-color:#e7b9b9;
+  background:#fdecec;
+}
+.task.termin .task-label{
+  color:#9b2c2c;
+  font-weight:700;
+}
 .task-label{
   font-size:10px;
   text-transform:uppercase;
@@ -436,6 +445,8 @@ body[data-theme="himmel"]{
   .print-task{display:flex;gap:3mm;align-items:flex-start;margin:0 0 3mm;padding:2.5mm 3mm;border:1px solid #bbb;border-left-width:4mm;border-radius:3mm;break-inside:avoid;}
   .print-task.arbeit{border-left-color:#3f6f4a;}
   .print-task.privat{border-left-color:#6a4c93;}
+  .print-task.termin{border-left-color:#b54444;border-color:#e7b9b9;background:#fdecec;}
+  .print-task.termin .print-section{color:#9b2c2c;font-weight:700;}
   .print-check{flex:0 0 auto;font-size:16pt;line-height:1;}
   .print-task-content{display:block;min-width:0;}
   .print-section{display:block;margin-bottom:1mm;color:#666;font-size:8pt;letter-spacing:.04em;text-transform:uppercase;}
@@ -531,6 +542,7 @@ body[data-theme="himmel"]{
         <select id="newTaskSection">
           <option value="arbeit">Arbeit</option>
           <option value="privat">Privat</option>
+          <option value="termin">Termin</option>
         </select>
         <button class="btn" onclick="addTaskFromInput()">Hinzufügen</button>
       </div>
@@ -660,6 +672,35 @@ function next14Days(){const today=new Date();return Array.from({length:14},(_,i)
 function weekday(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"short"}).format(parseISO(iso))}
 function longDate(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"}).format(parseISO(iso))}
 function isWeekday(iso){const d=parseISO(iso).getDay();return d>=1&&d<=5}
+
+function extractAppointmentMinutes(text){
+  const value = String(text || "").trim();
+  const match = value.match(/^(?:um\s*)?(\d{1,2})(?:[:.](\d{2})|\s*Uhr(?:\s*(\d{1,2}))?)\b/i);
+  if(!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2] ?? match[3] ?? 0);
+  if(!Number.isInteger(hours) || !Number.isInteger(minutes)) return null;
+  if(hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+  return hours * 60 + minutes;
+}
+
+function sortAppointmentTasks(list){
+  if(!Array.isArray(list)) return;
+  const timedAppointments = [];
+  const untimedAppointments = [];
+  const remaining = [];
+  list.forEach((task, originalIndex) => {
+    if(task && task.section === "termin" && !task.done){
+      const minutes = extractAppointmentMinutes(task.text);
+      if(minutes === null) untimedAppointments.push({task, originalIndex});
+      else timedAppointments.push({task, originalIndex, minutes});
+    }else{
+      remaining.push(task);
+    }
+  });
+  timedAppointments.sort((a,b)=>a.minutes-b.minutes || a.originalIndex-b.originalIndex);
+  list.splice(0,list.length,...timedAppointments.map(x=>x.task),...untimedAppointments.map(x=>x.task),...remaining);
+}
 
 function makeTask(text, section, category="", recurring=false){
   return {id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()), text, section, category, done:false, recurring};
@@ -802,6 +843,7 @@ function renderTasks(){
   if(!data.byDate[selectedDate]) data.byDate[selectedDate]=defaultTasks(selectedDate);
   ensureWorkRecurringTasks(selectedDate);
   ensurePrivateRecurringTasks(selectedDate);
+  sortAppointmentTasks(data.byDate[selectedDate]);
   const tasks=data.byDate[selectedDate];
   document.getElementById("title").textContent=longDate(selectedDate);
   document.getElementById("summary").textContent="";
@@ -823,7 +865,7 @@ function renderUnifiedList(){
 
     const row=document.createElement("div");
     row.className="task " + (task.section || "");
-    const label = task.section === "arbeit" ? "Arbeit" : "Privat";
+    const label = task.section === "arbeit" ? "Arbeit" : task.section === "termin" ? "Termin" : "Privat";
     row.innerHTML=`
       <div style="display:flex;align-items:center;gap:8px;">
         <button class="btn check ${task.done?'checked':''}" title="Erledigt / offen">✓</button>
@@ -859,6 +901,7 @@ function editTaskText(index){
   if(!trimmed) return;
 
   task.text = trimmed;
+  sortAppointmentTasks(data.byDate[selectedDate]);
   save();
   render();
 }
@@ -895,6 +938,7 @@ function moveTomorrow(index){
   if(!data.byDate[tomorrow]) data.byDate[tomorrow]=defaultTasks(tomorrow);
   data.byDate[tomorrow].push({...task,id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()),done:false,recurring:false});
   list.splice(index,1);
+  sortAppointmentTasks(data.byDate[tomorrow]);
   save();render();
 }
 
@@ -922,9 +966,9 @@ function addTaskFromInput(){
   const section=document.getElementById("newTaskSection").value;
   const newTask = makeTask(text,section,"",false);
 
-  // Neue manuell eingetragene Aufgaben werden ganz oben in die gemeinsame Liste eingefügt.
   const list = data.byDate[selectedDate];
   list.unshift(newTask);
+  sortAppointmentTasks(list);
 
   input.value="";
   save();render();
@@ -1318,6 +1362,7 @@ function escapeHtml(str){
 
 function printCurrentDay(){
   const tasks = data.byDate[selectedDate] || [];
+  sortAppointmentTasks(tasks);
   const note = (data.notesByDate && data.notesByDate[selectedDate]) || "";
 
   let printArea = document.getElementById("printArea");
@@ -1328,8 +1373,8 @@ function printCurrentDay(){
   }
 
   const taskRows = tasks.map(task => {
-    const section = task.section === "arbeit" ? "Arbeit" : "Privat";
-    const sectionClass = task.section === "arbeit" ? "arbeit" : "privat";
+    const section = task.section === "arbeit" ? "Arbeit" : task.section === "termin" ? "Termin" : "Privat";
+    const sectionClass = task.section === "arbeit" ? "arbeit" : task.section === "termin" ? "termin" : "privat";
     const doneClass = task.done ? " done" : "";
     const checkbox = task.done ? "☒" : "☐";
     return `
