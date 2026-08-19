@@ -156,6 +156,24 @@ h3{
   gap:4px;
   align-items:center;
 }
+.sort-bar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  margin:0 0 8px;
+  font-size:12px;
+  color:var(--muted);
+}
+.position-input{
+  width:42px;
+  min-width:42px;
+  padding:4px 3px;
+  border-radius:8px;
+  text-align:center;
+  font-size:12px;
+}
 .btn{
   border:1px solid var(--line);
   background:var(--soft);
@@ -426,6 +444,7 @@ body[data-theme="himmel"]{
   .add-grid{grid-template-columns:1fr}
   .task{grid-template-columns:1fr auto}
   .btn{padding:4px 7px;min-width:28px}
+  .position-input{width:36px;min-width:36px}
 }
 #printArea{display:none;}
 
@@ -532,6 +551,10 @@ body[data-theme="himmel"]{
 
     <section>
       <h3>Tagesaufgaben</h3>
+      <div class="sort-bar">
+        <span>Positionen eintragen</span>
+        <button class="btn" onclick="sortTasksByPosition()">Nach Nummern sortieren</button>
+      </div>
       <div id="tasks"></div>
     </section>
 
@@ -673,37 +696,32 @@ function weekday(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"short"}).
 function longDate(iso){return new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"}).format(parseISO(iso))}
 function isWeekday(iso){const d=parseISO(iso).getDay();return d>=1&&d<=5}
 
-function extractAppointmentMinutes(text){
-  const value = String(text || "").trim();
-  const match = value.match(/^(?:um\s*)?(\d{1,2})(?:[:.](\d{2})|\s*Uhr(?:\s*(\d{1,2}))?)\b/i);
-  if(!match) return null;
-  const hours = Number(match[1]);
-  const minutes = Number(match[2] ?? match[3] ?? 0);
-  if(!Number.isInteger(hours) || !Number.isInteger(minutes)) return null;
-  if(hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
-  return hours * 60 + minutes;
-}
-
-function sortAppointmentTasks(list){
-  if(!Array.isArray(list)) return;
-  const timedAppointments = [];
-  const untimedAppointments = [];
-  const remaining = [];
-  list.forEach((task, originalIndex) => {
-    if(task && task.section === "termin" && !task.done){
-      const minutes = extractAppointmentMinutes(task.text);
-      if(minutes === null) untimedAppointments.push({task, originalIndex});
-      else timedAppointments.push({task, originalIndex, minutes});
-    }else{
-      remaining.push(task);
-    }
-  });
-  timedAppointments.sort((a,b)=>a.minutes-b.minutes || a.originalIndex-b.originalIndex);
-  list.splice(0,list.length,...timedAppointments.map(x=>x.task),...untimedAppointments.map(x=>x.task),...remaining);
-}
-
 function makeTask(text, section, category="", recurring=false){
-  return {id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()), text, section, category, done:false, recurring};
+  return {id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()), text, section, category, done:false, recurring, position:null};
+}
+
+function renumberTasks(list){
+  if(!Array.isArray(list)) return;
+  list.forEach((task,index)=>{task.position=index+1});
+}
+
+function ensureTaskPositions(){
+  let changed=false;
+  Object.values(data.byDate || {}).forEach(list=>{
+    if(!Array.isArray(list)) return;
+    list.forEach((task,index)=>{
+      if(!Number.isFinite(Number(task.position)) || Number(task.position)<1){
+        task.position=index+1;
+        changed=true;
+      }
+    });
+  });
+  return changed;
+}
+
+function migrateTaskPositions(){
+  const changed=ensureTaskPositions();
+  if(changed) save();
 }
 
 function defaultTasks(iso){
@@ -811,6 +829,7 @@ function ensureWorkRecurringTasks(date){
         existing.text = item.text;
       }else{
         data.byDate[date].unshift(makeTask(item.text,"arbeit",category,true));
+        renumberTasks(data.byDate[date]);
       }
     }else{
       data.byDate[date] = data.byDate[date].filter(t => !(t.section==="arbeit" && t.recurring===true && t.category===category));
@@ -832,6 +851,7 @@ function ensurePrivateRecurringTasks(date){
         existing.text = item.text;
       }else{
         data.byDate[date].push(makeTask(item.text,"privat",category,true));
+        renumberTasks(data.byDate[date]);
       }
     }else{
       data.byDate[date] = data.byDate[date].filter(t => !(t.section==="privat" && t.recurring===true && t.category===category));
@@ -843,7 +863,6 @@ function renderTasks(){
   if(!data.byDate[selectedDate]) data.byDate[selectedDate]=defaultTasks(selectedDate);
   ensureWorkRecurringTasks(selectedDate);
   ensurePrivateRecurringTasks(selectedDate);
-  sortAppointmentTasks(data.byDate[selectedDate]);
   const tasks=data.byDate[selectedDate];
   document.getElementById("title").textContent=longDate(selectedDate);
   document.getElementById("summary").textContent="";
@@ -875,15 +894,23 @@ function renderUnifiedList(){
         </div>
       </div>
       <div class="actions">
+        <input class="position-input" type="number" min="1" step="1" title="Position" aria-label="Position der Aufgabe">
         <button class="btn edit" title="Text bearbeiten">✎</button>
-        <button class="btn up" title="Nach oben">↑</button>
         <button class="btn move" title="Auf morgen verschieben">→</button>
         <button class="btn delete" title="Für heute löschen">×</button>
       </div>`;
     row.querySelector(".task-text").textContent=task.text;
+    const positionInput=row.querySelector(".position-input");
+    positionInput.value=Number.isFinite(Number(task.position)) ? Number(task.position) : index+1;
+    positionInput.onchange=()=>setTaskPosition(index,positionInput.value);
+    positionInput.onkeydown=event=>{
+      if(event.key==="Enter"){
+        setTaskPosition(index,positionInput.value);
+        sortTasksByPosition();
+      }
+    };
     row.querySelector(".edit").onclick=()=>editTaskText(index);
     row.querySelector(".check").onclick=()=>toggleDone(index);
-    row.querySelector(".up").onclick=()=>moveUp(index);
     row.querySelector(".move").onclick=()=>moveTomorrow(index);
     row.querySelector(".delete").onclick=()=>deleteTask(index);
     holder.appendChild(row);
@@ -901,7 +928,28 @@ function editTaskText(index){
   if(!trimmed) return;
 
   task.text = trimmed;
-  sortAppointmentTasks(data.byDate[selectedDate]);
+  save();
+  render();
+}
+
+function setTaskPosition(index,value){
+  const task=(data.byDate[selectedDate] || [])[index];
+  if(!task) return;
+  const position=Math.max(1,Math.floor(Number(value) || index+1));
+  task.position=position;
+  save();
+}
+
+function sortTasksByPosition(){
+  const list=data.byDate[selectedDate] || [];
+  const stable=list.map((task,index)=>({task,index}));
+  stable.sort((a,b)=>{
+    const positionA=Math.max(1,Math.floor(Number(a.task.position) || a.index+1));
+    const positionB=Math.max(1,Math.floor(Number(b.task.position) || b.index+1));
+    return positionA-positionB || a.index-b.index;
+  });
+  list.splice(0,list.length,...stable.map(entry=>entry.task));
+  renumberTasks(list);
   save();
   render();
 }
@@ -919,15 +967,9 @@ function toggleDone(index){
   if(!wasDone && task.done){
     const [movedTask] = list.splice(index, 1);
     list.push(movedTask);
+    renumberTasks(list);
   }
 
-  save();render();
-}
-
-function moveUp(index){
-  if(index<=0)return;
-  const list=data.byDate[selectedDate];
-  [list[index],list[index-1]]=[list[index-1],list[index]];
   save();render();
 }
 
@@ -938,7 +980,8 @@ function moveTomorrow(index){
   if(!data.byDate[tomorrow]) data.byDate[tomorrow]=defaultTasks(tomorrow);
   data.byDate[tomorrow].push({...task,id:(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now()+Math.random()),done:false,recurring:false});
   list.splice(index,1);
-  sortAppointmentTasks(data.byDate[tomorrow]);
+  renumberTasks(list);
+  renumberTasks(data.byDate[tomorrow]);
   save();render();
 }
 
@@ -956,6 +999,7 @@ function deleteTask(index){
   }
 
   data.byDate[selectedDate].splice(index,1);
+  renumberTasks(data.byDate[selectedDate]);
   save();render();
 }
 
@@ -968,7 +1012,7 @@ function addTaskFromInput(){
 
   const list = data.byDate[selectedDate];
   list.unshift(newTask);
-  sortAppointmentTasks(list);
+  renumberTasks(list);
 
   input.value="";
   save();render();
@@ -991,6 +1035,7 @@ function addIdeaAsTask(idea, category){
   }else{
     list.push(makeTask(idea,"privat",category,false));
   }
+  renumberTasks(list);
   save();render();
 }
 
@@ -1362,7 +1407,6 @@ function escapeHtml(str){
 
 function printCurrentDay(){
   const tasks = data.byDate[selectedDate] || [];
-  sortAppointmentTasks(tasks);
   const note = (data.notesByDate && data.notesByDate[selectedDate]) || "";
 
   let printArea = document.getElementById("printArea");
@@ -1538,6 +1582,7 @@ function applyFullState(state){
   ideas = state.ideas || ideas;
   workRecurring = state.workRecurring || workRecurring;
   privateRecurring = state.privateRecurring || privateRecurring;
+  const positionsAdded = ensureTaskPositions();
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   localStorage.setItem(IDEAS_KEY, JSON.stringify(ideas));
@@ -1552,6 +1597,7 @@ function applyFullState(state){
   render();
 
   suppressFirebaseSave = false;
+  if(positionsAdded) scheduleFirebaseSave();
 }
 
 async function uploadCurrentToFirebase(){
@@ -1645,6 +1691,7 @@ function setTheme(theme){
 }
 
 removeAutomaticIdeaPlaceholders();
+migrateTaskPositions();
 initializeFirebase();
 applySavedTheme();
 render();
