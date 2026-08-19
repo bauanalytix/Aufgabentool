@@ -932,40 +932,26 @@ function prepareNewTaskAtEnd(list,task){
 
 function sortTasksByPosition(){
   const list=data.byDate[selectedDate] || [];
-  const positioned=[];
-  const unpositioned=[];
-
-  list.forEach((task,index)=>{
+  const stable=list.map((task,index)=>{
     const requestedPosition=Number(task.requestedPosition);
-    if(Number.isInteger(requestedPosition) && requestedPosition>=1 && requestedPosition<=15){
-      positioned.push({task,index,requestedPosition});
-    }else{
-      unpositioned.push(task);
-    }
+    const hasRequestedPosition=Number.isInteger(requestedPosition) && requestedPosition>=1 && requestedPosition<=15;
+    const position=hasRequestedPosition
+      ? requestedPosition
+      : Math.max(1,Math.floor(Number(task.position) || index+1));
+    return {task,index,position,hasRequestedPosition};
   });
 
-  positioned.sort((a,b)=>a.requestedPosition-b.requestedPosition || a.index-b.index);
-  const sorted=unpositioned.slice();
-  let previousPosition=null;
-  let duplicateOffset=0;
-
-  positioned.forEach(entry=>{
-    if(entry.requestedPosition===previousPosition){
-      duplicateOffset+=1;
-    }else{
-      previousPosition=entry.requestedPosition;
-      duplicateOffset=0;
-    }
-    const insertAt=Math.min(
-      sorted.length,
-      Math.max(0,entry.requestedPosition-1+duplicateOffset)
-    );
-    sorted.splice(insertAt,0,entry.task);
+  stable.sort((a,b)=>{
+    return a.position-b.position ||
+      Number(b.hasRequestedPosition)-Number(a.hasRequestedPosition) ||
+      a.index-b.index;
   });
 
-  list.splice(0,list.length,...sorted);
+  list.splice(0,list.length,...stable.map(entry=>entry.task));
   renumberTasks(list);
-  list.forEach(task=>{delete task.requestedPosition});
+  // Nach dem ersten Sortieren bleiben die sichtbaren Nummern erhalten.
+  // Neu hinzukommende Aufgaben besitzen zunächst weiterhin keine Nummer.
+  list.forEach((task,index)=>{task.requestedPosition=index+1});
   save();
   render();
 }
