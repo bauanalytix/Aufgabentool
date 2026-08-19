@@ -228,8 +228,8 @@ h3{
   color:var(--muted);
 }
 .position-input{
-  width:42px;
-  min-width:42px;
+  width:46px;
+  min-width:46px;
   padding:4px 3px;
   border-radius:8px;
   text-align:center;
@@ -559,7 +559,7 @@ body[data-theme="tuerkis"]{
   .add-grid{grid-template-columns:1fr}
   .task{grid-template-columns:1fr auto}
   .btn{padding:4px 7px;min-width:28px}
-  .position-input{width:36px;min-width:36px}
+  .position-input{width:46px;min-width:46px}
 }
 #printArea{display:none;}
 
@@ -932,8 +932,40 @@ function prepareNewTaskAtEnd(list,task){
 
 function sortTasksByPosition(){
   const list=data.byDate[selectedDate] || [];
-  sortTaskListByStoredPosition(list);
+  const positioned=[];
+  const unpositioned=[];
+
+  list.forEach((task,index)=>{
+    const requestedPosition=Number(task.requestedPosition);
+    if(Number.isInteger(requestedPosition) && requestedPosition>=1 && requestedPosition<=15){
+      positioned.push({task,index,requestedPosition});
+    }else{
+      unpositioned.push(task);
+    }
+  });
+
+  positioned.sort((a,b)=>a.requestedPosition-b.requestedPosition || a.index-b.index);
+  const sorted=unpositioned.slice();
+  let previousPosition=null;
+  let duplicateOffset=0;
+
+  positioned.forEach(entry=>{
+    if(entry.requestedPosition===previousPosition){
+      duplicateOffset+=1;
+    }else{
+      previousPosition=entry.requestedPosition;
+      duplicateOffset=0;
+    }
+    const insertAt=Math.min(
+      sorted.length,
+      Math.max(0,entry.requestedPosition-1+duplicateOffset)
+    );
+    sorted.splice(insertAt,0,entry.task);
+  });
+
+  list.splice(0,list.length,...sorted);
   renumberTasks(list);
+  list.forEach(task=>{delete task.requestedPosition});
   save();
   render();
 }
@@ -941,7 +973,12 @@ function sortTasksByPosition(){
 function setTaskPosition(index,value){
   const task=(data.byDate[selectedDate] || [])[index];
   if(!task) return;
-  task.position=Math.max(1,Math.floor(Number(value) || index+1));
+  const requestedPosition=Number(value);
+  if(Number.isInteger(requestedPosition) && requestedPosition>=1 && requestedPosition<=15){
+    task.requestedPosition=requestedPosition;
+  }else{
+    delete task.requestedPosition;
+  }
   save();
 }
 
@@ -1131,21 +1168,25 @@ function renderUnifiedList(){
         </div>
       </div>
       <div class="actions">
-        <input class="position-input" type="number" min="1" step="1" title="Position" aria-label="Position der Aufgabe">
+        <select class="position-input" title="Position wählen" aria-label="Position der Aufgabe">
+          <option value=""></option>
+        </select>
         <button class="btn edit" title="Text bearbeiten">✎</button>
         <button class="btn move" title="Auf morgen verschieben">→</button>
         <button class="btn delete" title="Für heute löschen">×</button>
       </div>`;
     row.querySelector(".task-text").textContent=task.text;
     const positionInput=row.querySelector(".position-input");
-    positionInput.value=Number.isFinite(Number(task.position)) ? Number(task.position) : index+1;
+    for(let number=1;number<=15;number++){
+      const option=document.createElement("option");
+      option.value=String(number);
+      option.textContent=String(number);
+      positionInput.appendChild(option);
+    }
+    positionInput.value=Number.isInteger(Number(task.requestedPosition))
+      ? String(task.requestedPosition)
+      : "";
     positionInput.onchange=()=>setTaskPosition(index,positionInput.value);
-    positionInput.onkeydown=event=>{
-      if(event.key==="Enter"){
-        setTaskPosition(index,positionInput.value);
-        sortTasksByPosition();
-      }
-    };
     row.querySelector(".edit").onclick=()=>editTaskText(index);
     row.querySelector(".check").onclick=()=>toggleDone(index);
     row.querySelector(".move").onclick=()=>moveTomorrow(index);
@@ -1204,7 +1245,10 @@ function deleteTask(index){
 
   // Wiederkehrende Aufgaben werden nur für den aktuellen Tag ausgeblendet.
   // An den nächsten vorgesehenen Tagen erscheinen sie wieder automatisch.
-  if(task && task.recurring === true && task.category){
+  if(task &&
+     task.recurring === true &&
+     task.category &&
+     !String(task.id||"").startsWith("konflikt_")){
     if(!data.suppressedByDate) data.suppressedByDate = {};
     if(!data.suppressedByDate[selectedDate]) data.suppressedByDate[selectedDate] = [];
     if(!data.suppressedByDate[selectedDate].includes(task.category)){
@@ -2056,6 +2100,10 @@ function reduceEvents(events){
       const payload=cloneValue(event.payload);
       payload.task.id=conflictId;
       payload.task.text=String(payload.task.text||"Aufgabe")+" (Konfliktkopie)";
+      // Die Kopie ist eine eigenständige Aufgabe. Beim Löschen darf sie daher
+      // niemals die wiederkehrende Originalaufgabe für diesen Tag ausblenden.
+      payload.task.recurring=false;
+      payload.task.category="";
       states.set(entityKey("task",conflictId),{type:"task",id:conflictId,payload,deleted:false,lastEventId:event.id});
       return;
     }
