@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Die beiden bisherigen Anwendungen unverändert weiterlaufen lassen.
+    match /{collection}/{document=**} {
+      allow read, write: if collection == "Rückrufe"
+                         || collection == "aufgabentool";
+    }
+
+    // Neue Mein-Tag-Daten sind ausschließlich für das angemeldete Google-Konto erreichbar.
+    match /meinTagV2/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+  }
+}
