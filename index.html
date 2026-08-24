@@ -596,10 +596,6 @@ body[data-theme="tuerkis"]{
 
 </style>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-
 </head>
 <body>
 <div class="app">
@@ -718,25 +714,6 @@ body[data-theme="tuerkis"]{
       </div>
     </section>
 
-    <section id="syncPanel" class="sync-panel">
-      <div class="sync-head">
-        <strong>Handy &amp; Laptop</strong>
-        <div id="syncStatus" class="sync-status">Nur auf diesem Gerät gespeichert.</div>
-      </div>
-      <div class="sync-explanation">
-        Jede Änderung wird als eigener Eintrag gespeichert. Handy und Laptop ersetzen deshalb nicht mehr den gesamten Datenbestand des jeweils anderen.
-      </div>
-      <div id="syncActions" class="sync-actions">
-        <button id="signInButton" class="btn" onclick="signInWithGoogle()">Mit Google anmelden</button>
-        <button id="useLocalButton" class="btn hidden" onclick="seedCloudFromLocal()">Diesen Gerätestand übernehmen</button>
-        <button id="useCloudButton" class="btn hidden" onclick="useCloudOnThisDevice()">Firebase-Daten verwenden</button>
-        <button id="importLegacyButton" class="btn hidden" onclick="importLegacyFirebase()">Bisherige Firebase-Daten übernehmen</button>
-        <button id="signOutButton" class="btn hidden" onclick="signOutFirebase()">Abmelden</button>
-        <button class="btn" onclick="createBackup()">Sicherung speichern</button>
-        <label class="btn" for="backupFileInput">Sicherung laden</label>
-        <input id="backupFileInput" class="hidden" type="file" accept="application/json,.json" onchange="loadBackupFile(event)">
-      </div>
-    </section>
   </main>
 
   <section id="fluseThoughtsPage" class="paper fluse-thoughts-page hidden" aria-label="Fluse-Gedanken">
@@ -761,6 +738,8 @@ const SYNC_UID_KEY = STORAGE_KEY + "_firebase_uid_v2";
 const DEVICE_ID_KEY = STORAGE_KEY + "_device_id";
 const PRE_CLOUD_BACKUP_KEY = STORAGE_KEY + "_pre_cloud_backup";
 const FLUSE_THOUGHTS_ID = "__fluse_gedanken__";
+// Aufgaben werden ausschließlich lokal auf diesem Gerät gespeichert.
+const CLOUD_SYNC_ENABLED = false;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHgAgYB4YXvbBzWIc7rs3SrwIAkuSPvHs",
@@ -1832,6 +1811,7 @@ function updateSignedInActions(signedIn){
 }
 
 function initializeFirebase(){
+  if(!CLOUD_SYNC_ENABLED) return;
   try{
     if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
@@ -2176,7 +2156,7 @@ function applyEntityStates(states){
 }
 
 function startRealtimeSync(){
-  if(!currentUser || unsubscribeEvents) return;
+  if(!CLOUD_SYNC_ENABLED || !currentUser || unsubscribeEvents) return;
   syncIsActive=true;
   setSyncStatus("Synchronisation wird gestartet …","busy");
   unsubscribeEvents=eventsCollection().onSnapshot({includeMetadataChanges:true},function(snapshot){
@@ -2216,7 +2196,7 @@ function startRealtimeSync(){
 let entityVersions=new Map();
 
 function scheduleFirebaseSave(){
-  if(suppressFirebaseSave || applyingCloudState || !syncIsActive || !currentUser) return;
+  if(!CLOUD_SYNC_ENABLED || suppressFirebaseSave || applyingCloudState || !syncIsActive || !currentUser) return;
   clearTimeout(publishTimer);
   publishTimer=setTimeout(publishLocalDiff,120);
 }
@@ -2282,7 +2262,6 @@ function setTheme(theme){
 
 removeAutomaticIdeaPlaceholders();
 migrateTaskPositions();
-initializeFirebase();
 applySavedTheme();
 render();
 save();
