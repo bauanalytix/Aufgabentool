@@ -1,4 +1,4 @@
-const CACHE_NAME = "mein-tag-v10-2026-08-24";
+const CACHE_NAME = "mein-tag-v11-2026-09-22";
 const APP_FILES = [
   "/",
   "/index.html",
