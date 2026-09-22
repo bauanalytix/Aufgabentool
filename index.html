@@ -408,6 +408,11 @@ input,select,textarea{
   margin:0;
   padding-left:20px;
 }
+.archive-note{
+  margin:8px 0 0;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
 
 body[data-theme="lavendel"]{
   --bg:#e8dcf2;
@@ -1591,9 +1596,10 @@ function closeFluseThoughts(){
 function archiveCurrentDay(){
   const tasks = data.byDate[selectedDate] || [];
   const doneTasks = tasks.filter(t => t.done).map(t => t.text);
+  const note = (data.notesByDate && data.notesByDate[selectedDate]) || "";
 
-  if(doneTasks.length === 0){
-    alert("Für diesen Tag sind noch keine erledigten Aufgaben vorhanden.");
+  if(doneTasks.length === 0 && !note.trim()){
+    alert("Für diesen Tag sind noch keine erledigten Aufgaben oder Notizen vorhanden.");
     return;
   }
 
@@ -1602,6 +1608,7 @@ function archiveCurrentDay(){
     date: selectedDate,
     label: longDate(selectedDate),
     tasks: doneTasks,
+    note,
     archivedAt: new Date().toISOString()
   };
 
@@ -1615,6 +1622,70 @@ function archiveCurrentDay(){
   save();
   renderArchive();
   alert("Tag wurde archiviert.");
+}
+
+function autoArchiveDueDays(){
+  const now = new Date();
+  const today = toISO(now);
+  const includeToday = now.getHours() === 23 && now.getMinutes() >= 59;
+  const dates = new Set([
+    ...Object.keys(data.byDate || {}),
+    ...Object.keys(data.notesByDate || {})
+  ]);
+  let changed = false;
+
+  dates.forEach(date => {
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+    if(date > today || (date === today && !includeToday)) return;
+
+    const doneTasks = (data.byDate[date] || []).filter(task => task.done).map(task => task.text);
+    const note = (data.notesByDate && data.notesByDate[date]) || "";
+    if(doneTasks.length === 0 && !note.trim()) return;
+
+    const existing = data.archive.find(entry => entry.date === date);
+    if(existing){
+      // Bereits archivierte Aufgaben bleiben erhalten. Später erledigte
+      // Aufgaben desselben Tages werden ohne doppelte Einträge ergänzt.
+      const mergedTasks = (existing.tasks || []).slice();
+      const remaining = new Map();
+      mergedTasks.forEach(text => remaining.set(text,(remaining.get(text) || 0)+1));
+      doneTasks.forEach(text => {
+        const count = remaining.get(text) || 0;
+        if(count) remaining.set(text,count-1);
+        else mergedTasks.push(text);
+      });
+      const updatedNote = note.trim() ? note : (existing.note || "");
+      if(JSON.stringify(existing.tasks || []) === JSON.stringify(mergedTasks) && existing.note === updatedNote) return;
+      existing.tasks = mergedTasks;
+      existing.note = updatedNote;
+      existing.archivedAt = now.toISOString();
+    }else{
+      data.archive.push({
+        date,
+        label: longDate(date),
+        tasks: doneTasks,
+        note,
+        automatic: true,
+        archivedAt: now.toISOString()
+      });
+    }
+    changed = true;
+  });
+
+  if(changed){
+    save();
+    renderArchive();
+  }
+}
+
+function scheduleNextAutoArchive(){
+  const now = new Date();
+  const next = new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59);
+  if(next <= now) next.setDate(next.getDate()+1);
+  setTimeout(() => {
+    autoArchiveDueDays();
+    scheduleNextAutoArchive();
+  }, next.getTime()-now.getTime());
 }
 
 function toggleArchive(){
@@ -1637,7 +1708,8 @@ function renderArchive(){
     const div = document.createElement("div");
     div.className = "archive-entry";
     const items = (entry.tasks || []).map(t => "<li>" + escapeHtml(t) + "</li>").join("");
-    div.innerHTML = "<h4>" + escapeHtml(entry.label || entry.date) + "</h4><ul>" + items + "</ul><button class='btn delete'>Archiveintrag löschen</button>";
+    const note = entry.note ? "<div class='archive-note'><strong>Notizen</strong><br>" + escapeHtml(entry.note) + "</div>" : "";
+    div.innerHTML = "<h4>" + escapeHtml(entry.label || entry.date) + "</h4>" + (items ? "<ul>" + items + "</ul>" : "") + note + "<button class='btn delete'>Archiveintrag löschen</button>";
     div.querySelector("button").onclick = () => {
       if(!confirm("Archiveintrag löschen?")) return;
       const realIndex = data.archive.findIndex(e => e.date === entry.date);
@@ -2264,6 +2336,12 @@ removeAutomaticIdeaPlaceholders();
 migrateTaskPositions();
 applySavedTheme();
 render();
+autoArchiveDueDays();
+scheduleNextAutoArchive();
+document.addEventListener("visibilitychange",() => {
+  if(!document.hidden) autoArchiveDueDays();
+});
+window.addEventListener("pageshow",autoArchiveDueDays);
 save();
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(console.warn));
