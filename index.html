@@ -614,7 +614,6 @@ body[data-theme="tuerkis"]{
       </div>
       <div class="title-actions">
         <button class="btn" onclick="printCurrentDay()">Tag drucken</button>
-        <button class="btn" onclick="archiveCurrentDay()">Tag archivieren</button>
       </div>
     </div>
 
@@ -1591,37 +1590,6 @@ function closeFluseThoughts(){
   document.getElementById("days").classList.remove("hidden");
   document.getElementById("dayPage").classList.remove("hidden");
   window.scrollTo({top:0,left:0});
-}
-
-function archiveCurrentDay(){
-  const tasks = data.byDate[selectedDate] || [];
-  const doneTasks = tasks.filter(t => t.done).map(t => t.text);
-  const note = (data.notesByDate && data.notesByDate[selectedDate]) || "";
-
-  if(doneTasks.length === 0 && !note.trim()){
-    alert("Für diesen Tag sind noch keine erledigten Aufgaben oder Notizen vorhanden.");
-    return;
-  }
-
-  const existingIndex = data.archive.findIndex(e => e.date === selectedDate);
-  const entry = {
-    date: selectedDate,
-    label: longDate(selectedDate),
-    tasks: doneTasks,
-    note,
-    archivedAt: new Date().toISOString()
-  };
-
-  if(existingIndex >= 0){
-    if(!confirm("Für diesen Tag gibt es bereits einen Archiveintrag. Überschreiben?")) return;
-    data.archive[existingIndex] = entry;
-  } else {
-    data.archive.push(entry);
-  }
-
-  save();
-  renderArchive();
-  alert("Tag wurde archiviert.");
 }
 
 function autoArchiveDueDays(){
